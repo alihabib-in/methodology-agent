@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+httpx
+pydantic
+pydantic-settings
+psycopg[binary]
+sqlalchemy
+qdrant-client==1.14.3
+PyJWT
+pytest
+edge-tts

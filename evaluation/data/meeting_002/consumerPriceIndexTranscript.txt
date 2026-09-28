@@ -1,0 +1,1275 @@
+Introduction
+0:00
+good afternoon everyone and welcome to the first of the 13 webinars that are
+0:05
+part of the 2020 M us webinars program my name is Catalina Justine I'm
+0:10
+professor of statistics a diversity of Pisa in Italy and today I will act as the webinar facilitator as this is a
+0:17
+live event I would like to specify that today I'm connected from my house as all the other members of the emos
+0:23
+Stafford University of Pisa as we fully respect the direction of the Italian government and the University of Pisa to
+0:30
+prevent the spread of the corona virus so going back to our webinar let me first explain for any newcomers that
+0:37
+emos stand for the European Mastan official statistics and joint project of
+0:42
+University and data producers in the you member states EF EA and EU candidate
+0:48
+countries if your university is the interesting apply for the emos label please consider that the permanently
+0:55
+open call for university is available on the e most dedicated page on the Eurostat website for staying coated with
+1:02
+the emos news and community please follow the emos on Twitter demos account is at EU underscored emos now before I
+1:12
+give the floor to how was Peter let me briefly explain how we run the webinar today as the participant you can watch
+1:19
+and listen to the session to interact with the presenter you can use the chat represented by the comic symbol we
+1:26
+encourage you to prepare your questions and post them during the presentation or the question breaks we will add some
+1:33
+costume racks and the final discussion to the prior to the questions should you have any technical problem please try
+1:39
+restart your skype before business or the computer or device that you are using for more specifically quest
+1:46
+technical questions you can use the chat and you will receive a personal reply in
+1:51
+any case please consider that the slides of the presentation are already available on the emos 2020 events
+1:58
+website today I have the great pleasure to host at a dance marrow from Deutsche
+2:04
+Bundesbank dr. James Murphy is advisor in the office of the director general
+2:10
+statistics at Deutsche Bundesbank where he is in charge of second half the sustainable
+2:15
+financial data hub prior to his current role Jones was head of the section for
+2:21
+business cycle price and property market statistics for many heaters and the recently on a second went to the
+2:29
+European Commission Jan's is a member of the task team on scanner data of the EU
+2:36
+UN global working group of big data the ons technical advisory panel on
+2:42
+consumer prices and the steering committee on the UN out one group on prices indexes he is also serve as
+2:51
+representative of the European system of central banks and on des s mo sport okay
+2:58
+so today it will present about and you can see a consumer price indices from
+3:04
+Phoenicia to new data sources and techniques so gents thank you the floor
+3:09
+now is yours until our first question break a gardenia Catarina and and good afternoon
+Agenda
+3:18
+as you can see I'm still amorphous but this will be the last day I'm going to
+3:23
+the office and then also do teleworking and as you heard I will be talking about
+3:29
+consumer price indices today from traditional to new data sources and techniques and you certainly have
+Questions
+3:35
+already seen on the website the details of the webinar just the two main
+3:41
+questions we will be addressing in in the next course so is what are the conceptual and practical measurement
+3:47
+problems in measuring inflation in the digital economy and secondly what are the methodological issues and practical
+3:53
+experiences with the use of big data for compiling consumer price indices on the
+3:58
+matter of big data I will also like to recommend the first talk in this year's Emma's webinar series by the Viet Minh
+4:05
+on trusted smart statistics where you also touch upon this issue before we go
+Recommendations
+4:12
+into these more detailed areas we will also look at the European harmonized index of consumer prices as an
+4:19
+introduction to know what we will be talking about in more detail and I will not be talking about Corona today which
+4:26
+might have been much more but just saying there's also an issue with survivors and price metro man
+4:32
+that is how should we deal with the consolations we now see with slides and
+4:37
+package holidays but as I said that's not the topic of today if you were to like to get into further details of of
+References
+4:44
+the issues of on price measurement here are some references we can look into
+4:50
+more detail into digitalization and new data sources so let's get started the european harmonized index of consumer
+European harmonized index of consumer prices
+4:57
+prices and so this will about inflation measurement so my first question for you
+5:03
+and type it in the chat is what is that today's released inflation rate in the
+5:08
+euro area don't look it up just guess what it is right in the chat all right
+What isHICPE
+5:14
+here we go so the HIC PE for short is a specific measure that is developed in the EU for
+5:21
+indices that can be directly compared and aggregated across countries and what
+5:28
+we do on the central banking side it is used in the monetary policy strategy
+5:33
+particularly in quantifying the price stability criteria where price stability is defined as a year-on-year increase in
+5:41
+the eight recipe for the euro area of below 2% so it's crucial to understand
+5:47
+here that the definition of price stability means rates inflation rates between 0% and 2% however the Governing
+5:57
+Council has clarified that in the pursuit of possibility it aims to maintain inflation rate below but close
+6:04
+to 3% over the medium-term so that in contrast is a definition is a more
+6:10
+specific monetary policy aim but that does not mean that your system has
+6:16
+deflation target of 2% which is not the case and further it is used for
+6:22
+assessing the high stability criterion which is a convergence criterion for member states who wanted to join the
+6:28
+euro area over and above of this specific monetary policy uses of course
+6:33
+the HIC pecan and is used as an economic indicator for analyzing the state of the
+6:39
+economy and for indexing for example contracts and wages so a bit
+What isLSPI
+6:46
+more technical details what is the h IC p conceptually conceptually it is called
+6:51
+LSPs table index you might have come across LSPs index during your studies laspeyres
+6:57
+type means we are doing a bit a bit differently so what we do we still look
+7:03
+at the price changes of products over time so p i denotes a pricing of the ice
+7:09
+product and we have two periods that we take into consideration here in the
+7:14
+formula so there is in the denominator the price reference period denote as naught T that is December of the
+7:22
+previous year so throughout the given year we compare the price of the current period the comparison period empty to
+7:30
+the prices of the previous December that means we are eventually ending up with a series of 13 months where we always
+7:38
+compare the current movements to the previous December um we then apply any
+7:44
+weights to to come up with the overall list pace type price index these weights
+7:50
+are derived in general from national accounts but also from other secondary statistics so that means now we do have
+7:57
+these these 13 indices but in reality we cannot do this calculation for each and
+8:04
+every product of their so in reality we have to look at what is called elementary aggregates the problem is in
+Elementary aggregates
+8:12
+reality in practice we have to construct the HIC P in two stages there's a first
+8:18
+stage of aggregation where we only have crisis but not the associated weights and there's the second stage of
+8:24
+aggregation where we indeed do have these weights for higher level aggregation for the rest of this talk
+8:31
+particularly when we talk about digitalization and big data we will focus on this lower level so the
+8:37
+elementary aggregates and the problem is we have to do something differently here
+8:42
+since we do not have weights and we will apply elementary aggregate indices here
+8:48
+denote SPI and then at this level we will apply the weights for this PR
+Formulas
+8:55
+there are usually two formulas used in the HACCP and also national consumer
+9:00
+price indices and emails in the world so the first index that we normally come
+9:06
+across is a little index that is the ratio of arithmetic mean prices so as
+9:11
+you can see in the numerator we take the just the arithmetic mean of prices today
+9:16
+and divide them in the nominator we see average prices in the price reference
+9:23
+period December of the previous year we can do the same calculation also in a
+9:29
+geometric manner which will lead to the Jevens index so that's a measure of geometric mean prices or because of this
+9:35
+particular property also the geometric mean of price relatives so empirically
+9:41
+that Intel and Jevons will be close to each other in most situations not necessarily in all but these are the
+9:49
+formulas that are actually used in price index calculation at the at the truly item level at the lowest level of index
+9:56
+calculation and in digitalization we will see the issue with which prices to
+10:01
+plug in here Andras is big data we will see a completely different approach to this elementary indices the problem with
+10:09
+a digitalization will be what happens if we cannot compare the same products over
+10:14
+time and similar problem with big data where we will just also have many many
+10:21
+many more observations than we do in traditional price collection so the first stage of aggregation do toe or
+10:27
+Jevons the second stage of aggregation last pairs type but as we have seen we
+10:33
+end up with an index which is just for 13 months for this price reference period is changed every year which means
+10:42
+we have this short term index or 13 months but we also want to make the longer-term comparisons these long-term
+10:49
+comparisons are achieved by what is known as train linking so what we do in
+10:55
+the HIC p we train linked every year on the December of the previous year so in
+11:01
+the longer term we actually train linking December was December December is December just at the
+11:08
+and we are linking with the current months so maybe this is better understood in in a more graphical manner
+11:14
+as you can see here in the top panel you see the short-term laspeyres indices
+11:21
+where I just simulated sinus curve and you see that these always thought at 100
+11:27
+in December and then end up something else in the next December then a new
+11:32
+series starts at 100 which goes on to the next December but in the shaded areas you can see that this an overlap
+11:39
+between the old series and the new series this overlap we do use for the
+11:45
+chain link link just applying the rule of three so we shift the level of the
+11:51
+new series to yield and shift the gap and shift it again to construct the long
+11:57
+term index so this was a very rough and quick and dirty introduction into the
+12:02
+HIC P the point is what you should take from from this part which is not the
+12:08
+focus of the talk is how we do measure consumer prices in Europe so we do have
+12:14
+a measure which is tailor-made for monetary policy we do have to understand
+12:20
+that the construction is actually done in two stages using elementary and gets and we will focus on these elementary
+12:27
+aggregates in more follows and if you want to do a long term comparison we do
+12:32
+this annual train linking of our December of the previous year in the appendix to these slides you will also
+12:39
+find a numerical example which is fully worked in excel file there is a
+12:44
+hyperlink in the slides you can just link on it and you can download the excel file form from the US side website
+12:50
+so if you have any questions on this particular part I would be happy to answer them now yes please if you have
+13:01
+question you can use the charts of course it is just the first part then we
+13:07
+will have another question break in another 12 slides
+13:13
+okay so maybe this is all concerning so yeah no no for the moment no questions
+13:19
+this is was I think the the introduction yeah it was the introduction a meet yeah
+13:24
+as I said this is not the focus of the talk on the HACCP because this is a bit
+13:31
+special in the family of international consumer price indices because it has a specific target which is monetary policy
+13:38
+strategy while other indices out there in the world have different specific targets so once we have covered this now
+13:47
+and I can't see any further questions arriving now and let's come to to to the
+13:52
+first big topic of this talk that is digitalization and the impact on
+Digitalisation
+13:59
+inflation measurement um what does it mean well oh well I forgot one thing to
+Inflation rate
+14:06
+mention here so because nobody said something the actual inflation rate currently is at one point two percent so
+14:12
+we are in the domain of price stability right now digitalization right so we we do have
+Digitalization
+14:20
+some long-standing challenges in consumer price indices with the changing
+14:25
+economy so you might have heard about the sharing economy Airbnb and uber and
+14:32
+the question that we've also learned that is capturing quality change this is
+14:37
+a not a new problem but it has now been amplified by digitalization so the problems I will be presenting now are by
+14:44
+no means new we just have them to to a much bigger degree than than we had them
+14:50
+in the past in consumer price indices so what we now see in the economic debate
+14:57
+is whether there is an issue with recipie I'm measurement and these are V
+15:03
+growth measurements so I do assume that will also be a webinar on national accounts they will certainly also talk
+15:10
+about digitalization because every measurement error that is done on the
+15:15
+price index site will also lead to measurement errors on the real GDP site so on the output side hence this is link
+15:23
+between prices and and national accounts however quite generally it is set that
+15:30
+is conceptually relevant to understand the impact of digitalization on the
+15:37
+consumer inflation as measured by by the CPI in particular there are three issues
+15:44
+which are highlighted in this debate and this largely revolve around incomplete
+15:50
+adjustment for quality change so what we'll be talking about in the next couple minutes was all about quality
+15:56
+change and we will have an example on that in a second so the first issue is
+16:03
+how shall we treat new varieties of existing digital products so a new
+16:09
+computer arrives in in the market with new functionalities a bigger hard disk
+16:15
+etc etc so how will that be accounted in consumer price indices the second
+16:21
+question is the treatment of new digital products that replace existing non digital products so in the past you
+16:29
+might have bought a CD or a blue wave but now you can get the same service from streaming from the internet so now
+16:36
+there is a digital product of streaming which replaces a non digital product the
+16:42
+a CD or the blu-ray disc how shall that be accounted for in consumer price
+16:47
+indices and the third question and this list is certainly not exclusive is how
+16:52
+shall we go about the improved variety selection of digital and non-digital products so it's quite common nowadays
+17:00
+to shop clothing books and many more things online while in the past you had
+17:05
+to go to the local brick-and-mortar store to to shop these Goods now you can
+17:10
+do it online and you might most certainly have a broad choice of products available online than in in
+17:18
+your local store how shall that be reflected in consumer price innocence I will focus on the first point here that
+17:25
+is a treatment of new and often improved varieties of existing digital products
+17:31
+there has been a study by Weinstock and Schreyer which is also linked in the
+17:38
+references which look at the upper bounds impacts on the price index
+17:43
+for household consumption in OECD countries so they try to look at what is the maximum possible impact of
+17:50
+digitalization on the miss measurement of consumer prices so they did a kind of
+17:56
+a simulation study based on assumptions and there is also a as follows so for
+18:02
+the first point which will look into a second in more detail they arrived at the
+18:07
+annual rate is overstated by Lord corn for one percentage point which is driven
+18:14
+mainly by a nought point to four percentage point over estimation for telecommunication services so using the
+18:22
+internet and your mobile phone apparently has become cheaper and more
+18:28
+so than it is reflected in consumer price indices today same story for for
+18:35
+the second point the digital replacements where they arrive at a miss measurement of naught point one one
+18:42
+percentage point and for the improved variety selection another naught point
+18:48
+naught 5 percent of support so combining all these three effects together they
+18:53
+arrive at an upper bound of north point five seven percentage points that inflation is measured miss measures due
+19:01
+to the effects of digitalization as I said this is a simulation study and is
+19:07
+the upper bound in in their assumptions so this is not necessarily saying that
+19:12
+inflation indeed is mismeasured to this degree all what we can say with certainty is that the effects of
+19:20
+digitalization are not yet fully captured in consumer price indices which
+19:26
+by the way does not only apply to Europe but also to to other countries sir elsewhere so I wanted to go now into a
+19:34
+more detailed example with you and to to that and I will for a second skip two
+19:40
+slides and then come back to them but I have a question on this particular shot so we are now on page 18 of the
+Example
+19:46
+presentation where I've plotted for you the stylized price parse of different
+19:52
+iPhone models and as a slide title SAS do higher
+19:57
+prices reflect quality growth or inflation so what you can see at the
+20:03
+bottom of the shot is the iPhone 8 and the iPhone 8 plus followed then by the
+20:08
+iPhone 10 are and last but not least the iPhone 11 Chrome and Promax
+20:13
+so my question now for you in the shaft is the difference in prices we do see
+20:19
+between these different iPhone models these newly introduced varieties of the
+20:25
+iPhone do you think that these price level differences are due to a different
+20:31
+quality than please type a queue or do you think this is genuine Christ change
+20:37
+and Hanks is inflation then please type an eye into the shack and we see how you
+20:42
+think about this so this is a real world situation I use the list prices by Apple
+20:49
+and then make a stylized price part than the highly fluctuating thing you would have seen in in real time so but
+20:56
+interestingly it's already coming a lot say inflation already we talk about that now in more detail so back to slide 16
+21:04
+where we now discuss what's happening here mean out of different option cuts
+21:11
+obviously so the iPhone 8 just going back to slide 18 again the iPhone 8 and
+21:16
+the A+ they're available from September 17th through out three to the last
+21:22
+months February 2020 and the iPhone 10 are only arrived in the market at least
+21:29
+in Europe in October 18 why the iPhone 11 just came in in September 19 so
+21:35
+obviously if you want to have a time series that goes from September 17 to
+21:40
+February 20 the only single model you could use is the iPhone 8 but that's one
+21:47
+option quite obviously however what we normally do see and this is not a
+Models matched approach
+21:52
+general rule this is and stylized facts I'm giving you now so if you only look
+21:57
+at the iPhone 8 that is what we would call the matched models approach so we look at the prices of the continuing
+22:04
+products in general this to an overestimation of inflation for
+22:10
+digital products this might not necessarily apply one-to-one to other product groups but what we what we
+22:17
+normally do recommend is to to refresh your sample so sample refreshment means
+22:23
+you bring in the new products and product varieties that have appeared in
+22:29
+the market since you lost refresh the sample which means a newly selected
+22:34
+sample is linked in and the old one is linked out and as always there is an
+22:40
+overlap between the new and the old sample which is either December which is
+22:47
+the month where we do the linking the chain linking for the oval HS EP or you
+22:52
+could at least in theory do this immediately once a new product or variety comes into the market so there
+22:59
+are a couple of things now going on first when we do have significant
+23:04
+quality improvement and most of you did not consider this a quality improvement
+23:10
+then if we do not adjust for that improvement necessarily we will
+23:15
+overstate the products price change if we assume the price level changes for
+23:20
+the different varieties are pure price changes then we show too much price
+23:29
+change if indeed this quality improvement at least partially secondly
+23:35
+and we will see that in this simple example a second again the longer we
+23:41
+wait with the introduction of the new products the bigger might be the problem
+23:46
+in digital products since you miss the price declines of digital products
+23:51
+particularly in early stages of their life a third issue here is that the
+Quality increases
+24:00
+quality increases might even be bigger than the price differences so in indeed
+24:07
+if you do run an a direct or explicit quality adjustment you might adjust for
+24:13
+more than just a sheer price level difference and we will see that in a second as well so with all these three
+24:21
+points I've now been talking about that we overestimate the price change
+24:27
+hence underestimate the quality change but there's also a discussion much less
+24:33
+so but this should not be overlooked bomi's that we might also overstate the
+24:38
+quality change and hence understate price change the example here is that we
+24:45
+do not explicitly capture the quality decline if we need to purchase a new
+24:52
+model of mobile phones or computers in the absence of backwards compatibility of new software with all the hardware so
+24:59
+you might need to buy a new computer just to run the latest software on it but you might have been perfectly fine
+25:07
+with the old hardware and the old software however if the support and
+25:13
+maintenance is stopped for this old software you do need the new adware and
+25:18
+the new software so you have to spend money just to continue working without this new hardware with a new better
+25:27
+quality giving you extra utility so this should not be overlooked but in general
+25:34
+again not in all cases in general this overlooked quality changed for digital
+25:41
+products most likely is an insufficient capture of the quality improvement but
+25:47
+just repeating that point because it's quite a particular because the quality change might go in either direction so
+25:55
+it's not necessarily upwards it might also be downwards the problem is there
+26:00
+is lots of perceptions and opinions out there and so if we now come back to our
+iPhone price indices
+26:07
+example I will now show you how this translates into different price indices
+26:14
+you can calculate for these three iPhone models so now I do restrict myself to
+26:20
+the iPhone 8 the iPhone 10 are and the iPhone 11 and I calculate a price index
+26:26
+based on these three iPhone models and I do not calculate just one index because
+26:33
+as I said the question now is it inflation or is it quality gross most of you have sat
+26:39
+inflation some of you had sat quality growth and inflation and depending on
+26:45
+your personal perception if you were sitting in the National Statistical Office and doing the actual calculation
+26:51
+you get something like this so let me talk you through this shot so quite
+26:58
+obviously whether it's just one model available the iPhone 8 that is until
+27:03
+September 18 then you can oh sorry October 18 then you can just do one
+27:09
+index and that's for the iPhone age so in the first months we just see the
+27:14
+development of the iPhone 8 but then you see it's either going up or down let's
+27:20
+start from from the top so the top line is if you assumed that the whole
+27:26
+difference we see between the iPhone 8 the item 10 our and the iPhone 11 is
+27:31
+pure price change they are of exactly the same quality if you do so then
+27:38
+you're linking the in the meantime lower price of the iPhone 8 to the higher
+27:44
+price level of the iPhone 10 and later again to the higher price level of the
+27:49
+iPhone 11 and here are assumed we do this kind of linking in December and you
+27:56
+end up with a price index which was 100 in December 17 which is in its final
+28:03
+month February 20 around 120 so he would assume a 20% price increase in iPhone
+28:11
+prices if you follow this approach let's take next approach you assume that
+28:16
+the difference is pure quality change so all the price level difference you
+28:23
+observe in in the short before is perfectly due to quality and again we do
+28:29
+the linking in December what you then see is that this line is a bit below the
+28:36
+the memo item which is the iPhone 8 only which is due to the fact that we now
+28:42
+follow only the price level changes so if you assume pure price change we
+28:47
+follow the price levels if we assume pure quality change we only follow the price changes
+28:54
+and these are going down down down and down but never up we could have done so
+29:00
+the next darker line linking it immediately and we see immediately that
+29:05
+this line goes further down and this was the second point I I discussed a lake
+29:11
+introduction might introduce more buys if you assume this should be bias but
+29:16
+there is a fifth slide which goes down all the way and that is a direct quality
+29:22
+adjustment so if you now look at the technical specifications of the different iPhones so whether it's 64
+29:29
+gigabytes of one more 128 how many megapixels a camera has whether it has
+29:35
+one two or three cameras and so forth and suppose you can run a regression model and come up with with a price pull
+29:43
+for this new iPhone in an earlier period if you follow this approach you might
+29:50
+have gone down all the way to a price decline or 40% so what we do see here now you have
+29:57
+basically the choice between a price increase of 20 and a price decline of 40
+30:04
+percent what is correct I don't know as I said quality adjustment is as much
+Implied quality
+30:10
+an art as a size and a matter of debate and personal perception so this is the
+30:17
+implied quality you would assume following either of these approaches so
+30:23
+the price changes we saw the earlier slides can be translated into what it
+30:28
+means implicitly for the quality you assume behind that and you might assume
+30:33
+that the quality of the in in the highest case of the iPhone 11 is twice
+30:39
+as high as that of the iPhone 8 or just 40 or 60% higher and as I said there are
+30:48
+lots of opinions out there and I'm afraid there is no correct answer to this particular question so summarizing
+Summarizing
+30:56
+this little example you have the choice between an average
+31:02
+you wait for the pure price change scenario of 8% and the dial quality
+31:08
+adjustment of minus 20 if you just look at the at the iPhone 8 all the way
+31:14
+through you would have ended up with her minus 10 percent average annual rate just for comparison
+31:21
+Rhys Dauphin Schreyer in their study assumed a 5 percentage point over estimation so the range might be even
+31:29
+bigger but I admit this is a made-up example and quite extreme talk about
+31:34
+made-up examples how does the HIC P look like well this is the data as it has
+Mobile phone price indices
+31:40
+been released this morning by Eurostat for the HACCP for mobile telephone
+31:45
+equipment so this is 99% smart phones as you can see that is quite different in
+31:51
+the developments between the Member States and for full visibility I've chosen only the 12 countries that were
+32:00
+in the euro area in 2001 so the initial euro area countries and what the first
+32:06
+thing that we start destroying you is at ruff you see in 2016 that is for Austria
+32:13
+and this was due to a massive price reduction for a very common model so
+32:19
+this has nothing to do with digitalization at all so we can certainly and happily ignore this for
+32:25
+for for the rest of this talk let's look more towards the ends of this shot so
+32:31
+what you can see is 2015 equal 100 and Portugal ends up in February 2020 with
+32:40
+an index of over 130 so that means for Portugal this would be a 30% price
+32:47
+increase Finland on the other end you end up with an index of below 40 which
+32:54
+means you have a 60% price decline now again this is a personal perception and
+33:00
+I don't know the truth and I particularly don't know all the the country particularity x' but let's
+33:06
+assume that a mobile phone for simplicity has cost 100 euros in 2015
+33:15
+this same mobile phone or exist excessive now cost 130 in Portugal or 40
+33:22
+euros in Finland now mobile phones are quite a homogeneous goods so you get the
+33:28
+same iPhone and the same Samsom all over the place so personally I would say that
+33:34
+the the difference we see here in the indices is a bit broad - to reflect real
+33:41
+developments in the markets but again the health warning I don't I do not know
+33:46
+all the country particularities nor do I know all the details about the index
+33:51
+calculation just that's the personal perception here this is just the price
+33:56
+changes over the same period which we looked at the iPhone so from December 17
+34:02
+to February 2020 so particularly the trough in Austria is not part of this
+34:07
+calculation and you see that the price changes we see in in in Europe in the
+34:12
+corner area or anywhere between Belgium - 4 % an island - 18 % what is correct
+34:20
+again I do not know but I do see that there's quite a variability between
+34:26
+countries and that is one area us that is currently looking into so quite
+34:31
+obviously something is it's not aligned here and this is one area the colleagues
+34:39
+in Luxembourg are currently trying to to make grand on lastly what we do see in
+34:46
+this shot here is also part of you two different philosophies so it's the iPhone 8 and the eye point and the same
+34:53
+yes or no and if the answer is no how different are they and they are different answers in different member
+35:00
+states which brings me to the end of this second part where we have looked at
+35:06
+digitalization and the measurement of inflation quite generally for what are the issues we looked in in particular at
+35:14
+how do we go about new varieties of digital products and we did make an
+35:21
+example we see iPhones 810 are and 11 and we looked at the actual changes just
+35:27
+released today by us that smartphones in the 12 areas of in the 12 countries of your area and I'm happy to
+35:35
+see few questions on this part
+35:45
+so if you have question please you can use the chat I'm I'm just curious Jones
+35:59
+do you think it would be feasible to try to arm own eyes I mean oh you think at
+36:05
+European level should be physical at
+36:11
+least that's an excellent question and well the word is about that so maybe a
+36:18
+couple more words on the HTTP calculation so the hoc P is calculated
+36:23
+by each member state individually according to common rules so there are a set of rules how the hoc P shall be
+36:30
+combined with the ultimate aim that all the differences we see in the HACCP are our national differences in price
+36:38
+developments always but not in methodology so what use that then does
+36:45
+is to aggregate these numbers to totals for the euro area for the European Union
+36:51
+and so forth so in in no area it is at
+36:56
+least proceed currently that we do this kind of calculation centrally but of
+37:02
+course you could consider this so if we assume that and that's a bold statement
+37:09
+that all of the differences we see in this chart are purely methodological
+37:14
+there are two approaches one is the one that is usually chosen in other areas
+37:20
+and that has proven very successful and that is most likely how the colleagues in Luxembourg will go about is that is
+37:27
+you sit together as a Member States everybody drinks on the table how will they do it nationally and then you
+37:34
+discuss what are the best ways to do it in a harmonized manner the final thing
+37:40
+that will be published then is called a recommendation by us that and member
+37:45
+states are recommended to follow this recommendation in their compilation practices one recommendation might be
+37:52
+for example that you should not assume that all price levels change we see
+37:58
+is indeed pure price change but you do sir you should be doing some kind of
+38:03
+quality adjustment and that is one way how you could go about it and most likely the European Union will go down
+38:11
+this route and rightly so the other way which is always tossed around if you do
+38:17
+this quality adjustment centrally so um I'm not an expert in in mobile phones
+38:23
+but how many different models of varieties are out there which you really
+38:30
+need to look into to get a good market coverage let's say it's it's 20 or maybe
+38:36
+even 50 so if all Member States would then collect the prices on these 20 or
+38:41
+50 varieties in their country and the quality adjustment because it's all the
+38:48
+same technical specification and the quality adjustment would be done centralised then you would certainly go
+38:55
+away with all these methodological differences I don't see that happening I would also not be commented this of the
+39:02
+route to attune to be going because the the idea of the aged recipes that member states do it nationally and of course
+39:09
+this is a matter for discussion currently at at Europe and with the Member States and the final outcome will
+39:16
+be some kind of recommendation saying how you should in general treat price
+39:22
+changes for mobile phones and another area so mobile phones is just one example of digital products where one
+Question
+39:29
+needs to look into this question what
+39:35
+yes sorry the question well the basket
+39:43
+of goods are harmonized well no the basket of goods is is country-specific
+39:51
+what is harmonized is the classification so it's it's a technical term coin-op
+39:58
+the classification of individual goods for for consumption purposes which is
+40:04
+done at the UN level Europe has an additional layer eco cup European Cup
+40:10
+five digits so at the lowest level four sample in koi copies mobile telephone
+40:15
+equipment so that's the lowest level that is perfectly harmonized below that
+40:20
+now member states can choose whether 90% of their citizens use the iPhone or 90%
+40:28
+use Samsung so this is country Pacific and it must be country specific to
+40:34
+reflect the particularities in the Member States but again the the ultimate
+40:40
+aim of the HTTP is that the differences we do see in the figures in the numbers
+40:46
+should be only due to actual price changes and not due to differences in
+40:52
+methodology okay I can't see any more
+40:59
+but we have a general discussion at the end anyways so in in spite of this I will
+41:07
+continue with the third part so now for something completely different the use of big data sources for consumer price
+41:14
+indices so we've just seen with digitalization that the problem is a quality adjustment if we cannot make
+41:21
+this one-to-one comparison anymore we will now alleviate this problem with
+41:26
+a scanner and web scrape data so this is big data in consumer price indices and
+41:32
+these are making more more the way into into CPI's for short internationally so
+41:38
+scanner and webs great data just saying there is another question I will answer there at the end just saying scanner and
+41:46
+web spread data give a much broader access to a much broader continuum of
+41:51
+products so in the old days and that's done in numerous countries still and
+41:57
+will be done also for for numerous products groups in the future and you do sampling so you say well I want to to
+42:06
+collect prices on mobile telephone equipments so I sample a couple of varieties in the market so with scanner
+42:13
+and reps great data in inverted commas you get just everything so you have much
+42:18
+more variety in your sample but this
+42:24
+comes at a cost so now you all the time get products that disappear while at the same time
+42:30
+new products come in that is known as churn and we call this a dynamic product
+42:36
+universe so the the idea of sampling horse you could follow a product over a
+42:41
+longer period of time while with scanner and web squared data it might be that
+42:46
+one particular product is available only once and then disappears again Kruger's the second thing that changes
+42:54
+here now is you do get quantity salt so scanner data if you go to your
+42:59
+supermarket its scanned at the checkout so the barcode is scanned and this kind
+43:05
+of data also give you the quantity salt in in with traditional price collection
+43:11
+someone was going critically into the supermarket and vited the price down from the Shelf so you just get the price
+43:18
+but not the quantity risk and later you also do get the quantity and hence we
+43:24
+now are able at this elementary level to calculate weighted indices rather than
+Value chain
+43:30
+the unweighted dito or gems the value chain of this production process can be
+43:38
+broken down into three stylized phases the first would be collecting the data we are not going to touch up on that the
+43:45
+second processing data and we are going to look into more detail in this in a second and the third would be the
+43:51
+dissemination of results so on the processing of data and they are by large
+Classification
+43:58
+similar but they're still institutional around cement which makes them different and generally you can look at steps like
+44:07
+product classification an example yet to follow then you aggregate more or less
+44:14
+homogeneous products you filter observations which are errors or with
+44:19
+some way other distraught the calculation and then you do the final calculation of the index just before
+44:25
+disseminating it and so risk classification first we are talking of
+44:31
+tens of thousands or even more products and this is no longer possible to
+44:36
+classify manually but you have to do that automatically and that's the next point we will talk about after
+44:43
+you talk about classification we will come to the English calculation and where I will introduce what is known as
+44:49
+a multilateral approach so the other word bilateral that is the laspeyres index we've seen in introduction which
+44:57
+means we are comparing today with the price reference period December of the
+45:02
+previous year in a multilateral approach simplified you're comparing every period
+45:07
+with every other period but let's first start with the classification so the
+45:13
+classification might come from the data owner at least to some extent so supermarkets in general have their
+45:20
+own classification in place because they also do analyze their own scanner data the same holds true for web shops where
+45:27
+you most likely find the product presented in a structured way however we
+45:34
+need this classification towards this official classification for price indexes KOICA and it might not be
+45:42
+available at all or not be sufficiently detailed for the purpose if that is the case since you cannot do it any more
+45:49
+manually we have to do it via a supervised machine learning for
+45:55
+supervised machine learning what you do need is a small labelled data set in
+46:01
+order to train the algorithm the information you have available to train the machine generally is the data you
+46:10
+get from from the data owner it includes product codes you might have heard the
+46:16
+term EAN European article number this term is such as now outdated new term is cheating
+46:21
+global trade identification number you in general get a product description a
+46:26
+text field and you might get other metadata such as a size a major
+46:32
+challenge here now is feature engineering how do you go from from this scattered information towards the
+46:39
+classification example on the next slide and in general the problems are here
+46:45
+that the product descriptions the text are not natural text it's not like I'm speaking now so
+46:52
+so Siri would be or Alex would be very good in now capturing what I'm saying the product descriptions you get in in
+46:59
+scanner data a much shorter so they rely on short ends of aviation some specific
+47:05
+codes while on the other hand and that's very helpful this products codes in general follow a particular structure
+47:11
+and here's an example for that which I looked up from the Dominic spine
+47:17
+approved status at the Dominic's we were used in a second again for for the index
+47:22
+calculation as well it's a publicly available data set and on the link on the slide you can actually get all the
+47:29
+information to download and make it accessible for for your own purposes so
+47:35
+what do we find in this data set so I one example here from the bottled juice category you do see the picture it's
+47:43
+mocks 100% original apple juice what is
+47:48
+in the Dominic's data set is just mots regular Apple what we do have on the
+47:54
+other hand is the UPC number that's even older than then yeah and it's universal
+47:59
+product code you can think of that as a gteen at the barcode and this is a structure zero is a number system digit
+48:07
+14800 is a manufacturer code oh oh oh before is a protocol code and four is a
+48:13
+check digit and what we also know is the product size 64 fluid ounces which is
+48:20
+about 1.9 liters so what we actually do have available in the Dominic's data set
+48:26
+it's a label data set so we do know this is bottle juice but what we do have is
+48:33
+the UPC number the description Mott's regular apple and the product size 64 fluid ounces so if we have not
+48:42
+known that this is bottle juice what can we do well you might know that 14800 the
+48:50
+manufacturer code is mots and then you might know that mas is the juice producer which is a telltale that this
+48:57
+is juice then you still don't know whether it's bottled or frozen or chilled or whatever kind of juice then
+49:04
+you have the product description Mott's regular apple well it has apple in it but Apple might also mean it's a
+49:11
+food more than juice then another telltale is a product size which comes
+49:16
+include ounces which tells you it's a liquid rather than if it had been in grams than dog-eaters then most likely
+49:23
+would have been a dude who'd rather than a juice now the the issue here with with
+49:31
+smashing learning is to learn an algorithm using the UPC number the
+49:36
+product description and the product size on the label a data set that then gives
+49:42
+you the answer that this indeed is bottle juice this is a hot topic currently and I had several discussions
+49:49
+with Swiss colleagues at the European Central Bank for example about this and
+49:54
+machine learning is the key here in going about the product classification
+50:00
+for our purposes same stoical web spread data was basically the same problems it
+50:05
+works very well but it doesn't work perfectly just saying so this is just a flavor of what the issue with
+Index calculation
+50:12
+classification is let's now move on to the index calculation and there are
+50:18
+different approaches you can choose I will talk just about one approach here
+50:24
+because to me it's as simple to implement as you can see it it's a regression framework so in basically any
+50:32
+software package this is a single line of code but there are other approaches out there the important thing about all
+50:41
+these multilateral approaches is that they do satisfy what is called circularity that means if you go from
+50:49
+periods Nord to period one and then you go from period one to period two you get the
+50:56
+same result as if you have done completed Nord two periods to directly this is important as we shall see in a
+51:03
+second with a numerical example to avoid train drift so the bilateral formula
+51:09
+would not satisfy circularity and you get very very puzzling results if you
+51:16
+would apply the normal train linking framework bilateral formula which is what we come
+51:22
+up with a multi-level formula here so the time product dummy methods TPD for
+51:27
+sure in particular is a lock linear regression framework where you regressed the look of the prices left-hand side on
+51:35
+a constant dummies for time delta T and dummies for product gamma I that's it so
+51:43
+it's basically just dummies you plug into the regression the trick is now if you want this
+51:50
+regression and he normally uses this weighted least squares you get estimates
+51:55
+for the Delta T's if you take the antilog you exponentiate at the Delta
+52:01
+T's hat you get the product at the time product dummy index so the Delta T's
+52:07
+give you the development over time controlling all the differences in in in
+52:14
+the products I via the gamma I the product dies so the Delta T's are forced
+52:19
+to measure the PUE price change going through time and we now do an example using the Dominic's finer foods data set
+Dominicks dataset
+52:26
+again which is a very granular data start giving you a hundred million observations of several thousand
+52:33
+products in numerous categories and the the particular thing about the
+52:39
+Dominick's dataset is that it also has a dynamic universe due to new and
+52:44
+disappear products that churn so all the problems that follow from from this
+52:51
+dynamic universe can be seen from the Dominic's data set all those were the old it still does a trick in explaining
+52:59
+all the caveats and the methodologies around with scanner data we do this not
+53:05
+a monthly frequency of the weekly frequency in the data and the first thing I would like to show to you is the
+Item code availability
+53:11
+availability of item codes over time so there are four hundred and forty different bottle juices in the Dominic's
+53:19
+data set and as you can see some are available for quite some time of us am
+53:24
+NOT some disappear of us are new and those that are you might still disappear
+53:30
+and those that are available might be under for some periods of time so we do not
+53:37
+have everything available in every single period that would be the normal approach in price indexes we have
+53:43
+everything for every single period now we don't and there we need to do something about it and this is the
+53:49
+multilateral approaches so on average every product is available 37 months out
+53:55
+of 91 but that does include products that are available in all 91 months and
+54:01
+products that are available only in a single month so on average thirty seven
+54:06
+months if we now do the calculation with the term product dummy these are the results so you do see the the direct
+Results
+54:15
+line rate at TPD time for the dummy and that is our reference this is the
+54:22
+Exponential's the delta hat t if we ran
+54:28
+the calculation with weighted least squares i also for comparison plotted
+54:33
+the same sears if you do unweighted three squares and I also added a MIMO item the old CPI unit so this is
+54:41
+American data card obviously and the cpi-u is the American consumer price
+54:47
+index and as you can see that the lines are basically in sync it's just using
+54:53
+different data sources for the calculation the old CPI you was based on classical sampling the weighted and the
+55:00
+unweighted time product ami are based on the scanner data in the Dominic's finer foods data set in the bottom panel you
+55:07
+can see the share of products that are sold on a promotion and what you can see
+55:13
+from this chart is that the troughs particularly in the weighted time for a dummy are correlated with sale periods
+55:22
+so when it whenever there's a sale period people tend to buy more bottle
+55:28
+juice at lower prices and this translates into the troughs of the rated
+55:34
+time for a dummy we see less so in the unweighted time for a dummy because the
+55:39
+higher expenditures are not reflected in the unweighted and we don't see anything
+55:45
+at all in the in the old price serious because this was not respected at all in the classical sampling so we
+55:54
+just discovered this and now back to to the chain group which I mentioned before the waited time for a dummy ends up at a
+56:01
+hundred twenty four point nine if we had done a monthly chain link laspeyres we
+56:08
+would have end up at more than 1,600 of the indexed so this is a sixteen fold
+56:15
+increase of prices in bottle juice over just seven years this is this ridiculous
+56:21
+and this is the problem with bilateral indices and if you apply monthly chain
+56:26
+linking you get severe drift this might be upwards or downwards in the example
+56:33
+of the los países upwards but this means we must not use our standardless pair
+56:39
+approach for scanner data we must do something different which in this case is the weighted time product of me but
+56:45
+there are also other approaches out there as I already said the troughs are
+56:51
+highly correlated to save periods so the question now is how much more
+56:57
+information do we have in the priced misses based on scanner or web spread data compared to the traditional methods
+57:04
+so in this respect volatility and bias and these are the last two things I
+57:09
+would like to talk about today are further issues in this field volatility and let me be clear on that the trust
+57:16
+due to say its period are not volatility I just mean all these small going up and
+57:22
+downs of the index form without any real economic meaning while the sale period has a straightforward economic meaning
+57:29
+but even if you account for the sale periods what you do see and by seeing I
+57:36
+mean literally seeing in a short that these new data sources tend to produce
+57:42
+more volatile indices than we have comp additional approaches so there is little
+57:49
+to no noise in the traditional approaches while we see quite some noise in in the newer purchase so volatility
+57:57
+is is something that needs to be considered when we do price indices on big data on the topic
+Bias
+58:04
+data and that is my sub - light of wrap-up and bias I've heard quite often
+58:11
+that we now have the population of observations well unfortunate that is not true you
+58:17
+get a really big sample but it's biased because it's non probabilistic you just
+58:23
+get what you get not the population so there are transactions that are should be in the scope of the next but
+58:30
+are not recorded electronically but are we call electronically but are not available to the statistic office that
+58:37
+you delete in the filtering step that cannot be master linked and so forth the
+58:43
+problem is not more data better better data are better certainly scanner and
+58:48
+web squared data are leave in in index production but we must
+58:53
+be aware about volatility and bias and also the problem is you can be very very
+59:00
+precise with a million observation but you might be precisely off the target so have limited accuracy the danger he is
+59:08
+in blindly trusting that more data are necessarily better and must get better answers and because we do not get all
+59:14
+transactions you just get what you get and you might not even know which transactions you are missing so what we
+59:21
+do need indeed is a combination of the new sources with the more traditional
+59:26
+sources to reduce this coverage bias as it's called in statistics last one only
+59:32
+scanner and grab scrap data and no panacea on a nice area for research I can tell you this brings me to the end
+Recap
+59:39
+of the third part and of my webinar so what we discussed in the third part is
+59:44
+the processing of scanner and web scape data how we go about classification well
+59:49
+technically I just touched upon that because machine learning would have been another baby not index calculation and
+59:56
+we discussed some further issues which you should be keeping in mind when you deal with this new data sources and I'm
+1:00:03
+open for new questions maybe I start with the one which still
+1:00:10
+related to digitalization but would moutarde is moot on this also apply to
+1:00:16
+Big Data are the surveys on prices harmonized no for a survey first of all what you
+1:00:24
+need is a survey frame and this survey frame might be very different for the
+1:00:30
+same product in different member states or in different products in the same
+1:00:36
+member state so there is no general recommendation Paul Paul for the survey frame particular since again you need to
+1:00:43
+respect national particularities we even need to respect item particularities so there are some recommendations which are
+1:00:50
+good sources but there is no general line for how you should go about surveys
+1:00:55
+on prices same story here fall fall for scanner and web squared data if you
+1:01:00
+consider this to be a survey no general recommendation either because you have
+1:01:06
+to live with what you get if you only get weekly data from your date of Avada you have to deal with weekly data which
+1:01:12
+means it's already aggregated if you do get daily data you have to deal with a vast amount of data you receive if you
+1:01:20
+only get monthly data well there is little you can do about that either so you have to live with what you get of
+1:01:26
+course ideally you would like to have the lowest level possible but then you
+1:01:31
+have to deal with that level of this aggregation so general answer no
+1:01:36
+harmonization of the service but yes recommendations on how to process scanner data so there's actually a guide
+1:01:44
+published by your cert on how to process scanner and web square data
+1:01:51
+follow-up question can scan a day to solve the harmonization issue well maybe
+1:01:56
+I don't know yet if I give the next 79 a couple of years
+1:02:02
+I might be able to answer that certainly there is a big possibility or big
+1:02:09
+opportunity so opportunity for scanner data to foster harmonization in the
+1:02:15
+HACCP because it's a new field in if just everybody does the same you meet
+1:02:20
+harmonization even the data might be some way harmonized so yeah some change
+1:02:26
+our multinational say you might get the same format the same kind same structure
+1:02:31
+of data for several member states so this might be a few harmonization on the other hand it might also be appealed for
+1:02:38
+this harmonization so if now member states tend to do their their own
+1:02:43
+approaches to scanner data so deleting observations which should shouldn't be deleted aggregating products which are
+1:02:51
+not which should not be aggregating using different molecule approaches than
+1:02:57
+others so then you would have issues this harmonization but it's too early to tell because some member states have
+1:03:04
+implemented scanner data in in their actual production of the HIC P some are
+1:03:09
+trying to gain experience with scanner data and web script data others haven't
+1:03:16
+even started yet so it's too early to tell at this juncture where our scanner data will lead us in terms of
+1:03:22
+harmonization any more questions
+1:03:35
+never know whether it's a good sign or a bad sign if no one asked questions III
+1:03:41
+have served but I mean I just would like to hurt that I know that in Italy the
+1:03:46
+National Institute is doing is using this kind of data for computing in the
+1:03:52
+index so I'm not sure about is this information available which country
+1:03:57
+already used these sources of data to compute the the consumer index um well I
+1:04:05
+I'm yes or no so we certainly does know it is you as that but I'm not aware of
+1:04:13
+of a public repository where you can look it up in that level of detail so
+1:04:18
+there are I think it's called quality reports where you can look up the
+1:04:24
+general calculation methods by member state that's available on the user website but it might not be detailed
+1:04:33
+enough to tell you precisely in which areas they are using which particular
+1:04:38
+method etc so I I'm not sure there is an overview available to this extent on the
+1:04:44
+other hand is not truly confidential information so there are others which are much more advanced for example and
+1:04:50
+where I do know that is available on the website that they are dealing with with price changes years in scanner data and
+1:04:57
+web script outer but well we do have an overview of who does what but I'm not
+1:05:06
+sure that this is publicly available if someone is interested in that now addressing the user colleagues a
+1:05:12
+question to you guys well this can be made publicly available if someone comes
+1:05:18
+up with a follow-up question on that okay thank you so if we have no more
+1:05:25
+questions I think that we can finish with our webinar so I would like to
+1:05:31
+thank Jones for this very interesting lecture and I also would like to thank all our participants who join us today
+1:05:38
+for many different places so you can already download the presentation used by Jan's from the emos 2020 events
+1:05:45
+website where the recording of the webinar will be also available as soon as possible on the same website please
+1:05:53
+consider that you can redefine the recording so the first two webinars that we had in the meantime I can't we asked
+1:06:00
+you to check the inbox of your email account the email account that you used for register into the webinar as you
+1:06:06
+already received the link to a short survey about today's webinar we'd really appreciate your feedback to further
+1:06:12
+improve our webinars the next webinar is scheduled for next Tuesday 24th of March
+1:06:18
+wehrmacht Vanderloo from the CBS will be presenting on her Python and Julia do
+1:06:24
+you know them whole so a lot of people are saying thank you to you gents okay
+1:06:32
+so thank you again and I would like to say bye-bye to everyone so I hope you two you'll be part of also
+1:06:40
+our next webinar thank you

@@ -1,0 +1,22 @@
+{
+  "meeting_id": "M-001",
+  "title": "Active Establishment Indicator",
+  "language_mix": ["ar", "en"],
+  "segments": [
+    { "segment_id": "S001", "speaker_id": "business_01", "timestamp_start": "00:00:04", "timestamp_end": "00:00:12", "language": "ar", "text": "نريد مؤشر عن المنشآت النشطة." },
+    { "segment_id": "S002", "speaker_id": "methodologist_01", "timestamp_start": "00:00:14", "timestamp_end": "00:00:22", "language": "en", "text": "What exactly do you mean by active?" },
+    { "segment_id": "S003", "speaker_id": "business_01", "timestamp_start": "00:00:25", "timestamp_end": "00:00:34", "language": "ar", "text": "المنشأة التي لديها نشاط اقتصادي خلال الفترة." },
+    { "segment_id": "S004", "speaker_id": "methodologist_01", "timestamp_start": "00:00:40", "timestamp_end": "00:00:48", "language": "en", "text": "What frequency do you need this indicator at?" },
+    { "segment_id": "S005", "speaker_id": "business_01", "timestamp_start": "00:00:50", "timestamp_end": "00:00:58", "language": "ar", "text": "نريد المؤشر بشكل شهري." },
+    { "segment_id": "S006", "speaker_id": "methodologist_01", "timestamp_start": "00:01:05", "timestamp_end": "00:01:15", "language": "en", "text": "What is the reference period?" },
+    { "segment_id": "S007", "speaker_id": "business_01", "timestamp_start": "00:01:18", "timestamp_end": "00:01:26", "language": "en", "text": "Let's use 2025." },
+    { "segment_id": "S008", "speaker_id": "methodologist_01", "timestamp_start": "00:01:30", "timestamp_end": "00:01:40", "language": "en", "text": "Which geographic scope should this cover?" },
+    { "segment_id": "S009", "speaker_id": "business_01", "timestamp_start": "00:01:42", "timestamp_end": "00:01:50", "language": "ar", "text": "إمارة أبوظبي." },
+    { "segment_id": "S010", "speaker_id": "methodologist_01", "timestamp_start": "00:02:00", "timestamp_end": "00:02:10", "language": "en", "text": "Where does the data come from?" },
+    { "segment_id": "S011", "speaker_id": "business_01", "timestamp_start": "00:02:12", "timestamp_end": "00:02:20", "language": "ar", "text": "من السجل التجاري." },
+    { "segment_id": "S012", "speaker_id": "business_02", "timestamp_start": "00:02:30", "timestamp_end": "00:02:38", "language": "en", "text": "Actually, we need this quarterly, not monthly." },
+    { "segment_id": "S013", "speaker_id": "methodologist_01", "timestamp_start": "00:02:40", "timestamp_end": "00:02:48", "language": "en", "text": "Noted, so the frequency is quarterly?" },
+    { "segment_id": "S014", "speaker_id": "business_01", "timestamp_start": "00:02:50", "timestamp_end": "00:02:58", "language": "ar", "text": "نعم، ربع سنوي." },
+    { "segment_id": "S015", "speaker_id": "methodologist_01", "timestamp_start": "00:03:05", "timestamp_end": "00:03:15", "language": "en", "text": "Do you need any breakdown dimensions?" }
+  ]
+}

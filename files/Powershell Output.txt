@@ -1,0 +1,122 @@
+PS C:\Windows\system32> nvidia-smi
+Wed Sep  9 12:01:33 2026
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 596.58                 Driver Version: 596.58         CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX 500 Ada Gener...  WDDM  |   00000000:01:00.0 Off |                  N/A |
+| N/A   43C    P0            364W /   44W |       0MiB /   4094MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+PS C:\Windows\system32> nvidia-smi --query-gpu=name,memory.total,memory.free,memory.used,driver_version --format=csv
+name, memory.total [MiB], memory.free [MiB], memory.used [MiB], driver_version
+NVIDIA RTX 500 Ada Generation Laptop GPU, 4094 MiB, 3891 MiB, 0 MiB, 596.58
+PS C:\Windows\system32> systeminfo
+
+Host Name:                     SC-AD-LA-2174
+OS Name:                       Microsoft Windows 11 Enterprise
+OS Version:                    10.0.26200 N/A Build 26200
+OS Manufacturer:               Microsoft Corporation
+OS Configuration:              Member Workstation
+OS Build Type:                 Multiprocessor Free
+Registered Owner:              admin
+Registered Organization:       N/A
+Product ID:                    00330-80000-00000-AA140
+Original Install Date:         12/16/2025, 6:14:54 AM
+System Boot Time:              9/7/2026, 12:32:15 PM
+System Manufacturer:           LENOVO
+System Model:                  21G20003GR
+System Type:                   x64-based PC
+Processor(s):                  1 Processor(s) Installed.
+                               [01]: Intel64 Family 6 Model 170 Stepping 4 GenuineIntel ~1400 Mhz
+BIOS Version:                  LENOVO R2DET41W (1.26 ), 12/29/2025
+Windows Directory:             C:\Windows
+System Directory:              C:\Windows\system32
+Boot Device:                   \Device\HarddiskVolume1
+System Locale:                 en-us;English (United States)
+Input Locale:                  en-us;English (United States)
+Time Zone:                     (UTC+04:00) Abu Dhabi, Muscat
+Total Physical Memory:         15,881 MB
+Available Physical Memory:     2,114 MB
+Virtual Memory: Max Size:      35,337 MB
+Virtual Memory: Available:     11,609 MB
+Virtual Memory: In Use:        23,728 MB
+Page File Location(s):         C:\pagefile.sys
+Domain:                        scad.ae
+Logon Server:                  N/A
+Hotfix(s):                     4 Hotfix(s) Installed.
+                               [01]: KB5122385
+                               [02]: KB5054156
+                               [03]: KB5120998
+                               [04]: KB5120997
+Network Card(s):               3 NIC(s) Installed.
+                               [01]: Intel(R) Ethernet Connection (18) I219-V
+                                     Connection Name: Ethernet
+                                     Status:          Media disconnected
+                               [02]: Bluetooth Device (Personal Area Network)
+                                     Connection Name: Bluetooth Network Connection
+                                     Status:          Media disconnected
+                               [03]: Intel(R) Wi-Fi 6E AX211 160MHz
+                                     Connection Name: Wi-Fi
+                                     DHCP Enabled:    Yes
+                                     DHCP Server:     10.40.90.206
+                                     IP address(es)
+                                     [01]: 10.50.128.97
+                                     [02]: fe80::582c:f64e:65cc:7c99
+Virtualization-based security: Status: Running
+                               Required Security Properties:
+                                     Base Virtualization Support
+                                     Secure Boot
+                               Available Security Properties:
+                                     Base Virtualization Support
+                                     Secure Boot
+                                     DMA Protection
+                                     Secure Memory Overwrite
+                                     UEFI Code Readonly
+                                     SMM Security Mitigations 1.0
+                                     Mode Based Execution Control
+                                     APIC Virtualization
+                               Services Configured:
+                                     Credential Guard
+                                     Hypervisor enforced Code Integrity
+                                     Secure Launch
+                               Services Running:
+                                     Credential Guard
+                                     Hypervisor enforced Code Integrity
+                               App Control for Business policy: Enforced
+                               App Control for Business user mode policy: Off
+                               Security Features Enabled:
+Hyper-V Requirements:          A hypervisor has been detected. Features required for Hyper-V will not be displayed.
+PS C:\Windows\system32> Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,NumberOfLogicalProcessors
+
+Name                           NumberOfCores NumberOfLogicalProcessors
+----                           ------------- -------------------------
+Intel(R) Core(TM) Ultra 7 155H            16                        22
+
+
+PS C:\Windows\system32> Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory
+
+TotalPhysicalMemory
+-------------------
+        16652525568
+
+
+PS C:\Windows\system32> Get-PSDrive C
+
+Name           Used (GB)     Free (GB) Provider      Root                                               CurrentLocation
+----           ---------     --------- --------      ----                                               ---------------
+C                 239.44        235.28 FileSystem    C:\                                               Windows\system32
+
+
+PS

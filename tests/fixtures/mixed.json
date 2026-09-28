@@ -1,0 +1,32 @@
+[
+  {
+    "input": "نريد نطلع monthly indicator عن active establishments.",
+    "expected_concepts": ["indicator", "frequency"],
+    "expected_missing_information": ["definition", "statistical_unit", "data_source"],
+    "expected_question": "How should an establishment be defined as active?"
+  },
+  {
+    "input": "نريد نحسب active establishments لكن ما اتفقنا على definition.",
+    "expected_concepts": ["indicator"],
+    "expected_missing_information": ["definition"],
+    "expected_question": "How should an establishment be defined as active?"
+  },
+  {
+    "input": "الdata source هو Business Register، لكن ما نعرف update frequency.",
+    "expected_concepts": ["data_source"],
+    "expected_missing_information": ["data_source_update_frequency"],
+    "expected_question": "How frequently is the Business Register updated?"
+  },
+  {
+    "input": "نريد monthly indicator للمنشآت النشطة، والdata source هو Business Register، لكن ما اتفقنا على reference date.",
+    "expected_concepts": ["indicator", "frequency", "data_source"],
+    "expected_missing_information": ["reference_period"],
+    "expected_question": "What reference date should be used to determine whether an establishment is active?"
+  },
+  {
+    "input": "The source فيه establishments و companies و branches، وما حددنا الstatistical unit.",
+    "expected_concepts": ["data_source"],
+    "expected_missing_information": ["statistical_unit"],
+    "expected_question": "Which statistical unit should be counted: establishments, companies, or branches?"
+  }
+]

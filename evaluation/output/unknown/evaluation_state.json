@@ -1,0 +1,27 @@
+{
+  "meeting_id": "unknown",
+  "title": "",
+  "objective_history": [],
+  "facts": [],
+  "gaps": [],
+  "questions": [],
+  "conflicts": [],
+  "knowledge_candidates": [],
+  "candidate_scope": {
+    "objective": "",
+    "population": "",
+    "statistical_unit": "",
+    "reference_period": "",
+    "geographic_scope": "",
+    "indicators": [],
+    "dimensions": [],
+    "data_sources": [],
+    "definitions": [],
+    "constraints": [],
+    "open_questions": [],
+    "readiness_score": 0.0,
+    "readiness_status": "insufficient"
+  },
+  "history": [],
+  "state_version": 0
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "input": "We need a monthly indicator of active establishments.",
+    "expected_concepts": ["indicator", "frequency"],
+    "expected_missing_information": ["definition", "statistical_unit", "data_source"],
+    "expected_question": "How should an establishment be defined as active?"
+  },
+  {
+    "input": "We want to count active establishments but we have not agreed on the definition.",
+    "expected_concepts": ["indicator"],
+    "expected_missing_information": ["definition"],
+    "expected_question": "How should an establishment be defined as active?"
+  },
+  {
+    "input": "The data comes from the Business Register, but we do not know whether it is updated daily or monthly.",
+    "expected_concepts": ["data_source"],
+    "expected_missing_information": ["data_source_update_frequency"],
+    "expected_question": "How frequently is the Business Register updated?"
+  },
+  {
+    "input": "The indicator should be monthly, but we have not decided which date determines whether the establishment is active.",
+    "expected_concepts": ["frequency", "indicator"],
+    "expected_missing_information": ["reference_period"],
+    "expected_question": "What reference date should be used to determine whether an establishment is active?"
+  },
+  {
+    "input": "The source contains establishments, companies and branches, but we have not specified which entity should be counted.",
+    "expected_concepts": ["data_source"],
+    "expected_missing_information": ["statistical_unit"],
+    "expected_question": "Which statistical unit should be counted: establishments, companies, or branches?"
+  }
+]

@@ -1,0 +1,152 @@
+name: methodology-agent
+
+services:
+
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: methodology-llm
+    restart: unless-stopped
+
+    command:
+      - -m
+      - /models/Qwen3-4B-Instruct-2507-Q4_K_M.gguf
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - -c
+      - "4096"
+      - -ngl
+      - "999"
+      - --jinja
+
+    volumes:
+      - ./models:/models:ro
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://localhost:8080/health || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: methodology-api
+
+    restart: unless-stopped
+
+    environment:
+      LLM_BASE_URL: http://llm:8080/v1
+      LLM_MODEL: qwen3-4b-instruct-2507
+      LLM_TIMEOUT_SECONDS: "120"
+      LLM_MAX_TOKENS: "1200"
+      DATABASE_URL: postgresql+psycopg://methodology:methodology@postgres:5432/methodology
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION: methodology_knowledge
+      EMBEDDING_URL: http://embedding:8001
+      EMBEDDING_MODEL: intfloat/multilingual-e5-small
+      JITSI_BASE_URL: https://localhost:8443
+      JITSI_JWT_SECRET: KXjWfwImc0K8t8PgKYlBLVTO5w7MQpBl3t2ZGGeiIeNdIxY7Ei9akBuKlxb-rTeG
+
+    ports:
+      - "127.0.0.1:8000:8000"
+
+    depends_on:
+      llm:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      embedding:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: methodology-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: methodology
+      POSTGRES_PASSWORD: methodology
+      POSTGRES_DB: methodology
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U methodology -d methodology"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.14.0
+    container_name: methodology-qdrant
+    restart: unless-stopped
+
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+    ports:
+      - "127.0.0.1:6333:6333"
+      - "127.0.0.1:6334:6334"
+
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  embedding:
+    build:
+      context: .
+      dockerfile: Dockerfile.embedding
+
+    container_name: methodology-embedding
+    restart: unless-stopped
+
+    environment:
+      EMBEDDING_MODEL: intfloat/multilingual-e5-small
+      EMBEDDING_DEVICE: cpu
+
+    volumes:
+      - hf_cache:/home/appuser/.cache/huggingface
+
+    ports:
+      - "127.0.0.1:8001:8001"
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+volumes:
+  pgdata:
+  qdrant_storage:
+  hf_cache:

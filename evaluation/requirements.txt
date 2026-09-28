@@ -1,0 +1,7 @@
+# Minimal dependencies for the evaluation harness (mock mode).
+# The harness imports the production `app.*` package in-process, so it needs the
+# same core libs (pydantic models, settings, LLM HTTP client). No DB, vector
+# store, or web framework is required for mock mode.
+pydantic
+pydantic-settings
+httpx

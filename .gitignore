@@ -1,0 +1,25 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+models/*.gguf
+
+.pytest_cache/
+.mypy_cache/
+
+.vscode/
+.idea/
+
+logs/
+tmp/
+
+# Jitsi secrets + generated config/certs
+jitsi/.env
+jitsi/config/
+!jitsi/config/web/custom-interface_config.js
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/*.log

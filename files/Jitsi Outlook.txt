@@ -1,0 +1,147 @@
+I am giving you a sample idea, of how I want the front end to look like.
+
+I would make your React application look something like:
+
+┌─────────────────────────────────────────────────────────────┐
+│ SCAD Methodology Assistant                    Ali | Logout  │
+├───────────────────────────────────┬─────────────────────────┤
+│                                   │                         │
+│                                   │  METHODOLOGY ASSISTANT  │
+│          JITSI MEETING            │                         │
+│                                   │  Objective              │
+│   ┌───────────────────────────┐   │  ───────────────        │
+│   │                           │   │  Define monthly active   │
+│   │       Participant 1      │   │  establishment indicator │
+│   │                           │   │                         │
+│   │       Participant 2      │   │  Detected gaps           │
+│   │                           │   │  ✓ Population            │
+│   │                           │   │  ? Reference period      │
+│   │                           │   │  ? Statistical unit      │
+│   └───────────────────────────┘   │                         │
+│                                   │  Suggested Question      │
+│   🎤  📹  🖥️  Participants       │                         │
+│                                   │  "What should be the     │
+│                                   │   reference period..."   │
+│                                   │                         │
+│                                   │  [ Ask Question ]       │
+│                                   │                         │
+├───────────────────────────────────┴─────────────────────────┤
+│ Meeting Journal | Methodology State | Knowledge | Audit Log │
+└─────────────────────────────────────────────────────────────┘
+
+This is particularly suitable for your requirement that the AI proposes questions but a human controls when they are actually asked.
+
+One important caveat
+
+Don't assume that embedding Jitsi gives your FastAPI backend access to the meeting's raw audio.
+
+The architecture:
+
+React
+  │
+  └── Jitsi iframe
+          │
+          └── WebRTC audio
+
+does not automatically mean:
+
+Jitsi
+   ↓
+FastAPI
+   ↓
+Whisper
+
+You need to design a separate audio/transcription acquisition mechanism.
+
+That's actually why I recommend splitting your implementation into two stages.
+
+Stage 1 — Build this first
+React
+  ↓
+Jitsi IFrame API
+  ↓
+Self-hosted Jitsi
+  ↓
+FastAPI
+  ↓
+PostgreSQL
+
+Implement:
+
+create methodology session
+create Jitsi meeting
+generate unique room
+embed Jitsi
+join/leave events
+participant events
+meeting start/end
+meeting ↔ methodology session mapping
+authentication
+audit logging
+
+At this point you have a robust meeting platform.
+
+Stage 2 — Add the AI listening layer
+
+Then separately implement:
+
+Jitsi Meeting
+      ↓
+Audio acquisition
+      ↓
+VAD
+      ↓
+faster-whisper
+      ↓
+Arabic/English transcript
+      ↓
+TranscriptEvent
+      ↓
+Methodology Agent
+      ↓
+Gap Detection
+      ↓
+Question Generation
+      ↓
+React UI
+
+That separation will make debugging much easier.
+
+I would also avoid opening Jitsi as a separate browser tab
+
+For your use case, I would not do:
+
+SCAD App → "Open Jitsi"
+                     ↓
+              separate Jitsi tab
+
+Instead:
+
+SCAD React Application
+       │
+       ├── Jitsi iframe
+       │
+       └── Methodology Agent UI
+
+That gives the user one integrated workspace and makes the methodology agent feel like part of the meeting rather than a separate tool.
+
+One more recommendation
+
+Use the Jitsi IFrame API, rather than simply putting the Jitsi URL into a generic HTML <iframe>.
+
+Your React component should have something conceptually like:
+
+<JitsiMeeting
+    roomName={meeting.roomName}
+    userInfo={user}
+    onReady={...}
+    onParticipantJoined={...}
+    onParticipantLeft={...}
+    onMeetingEnded={...}
+/>
+
+while the backend remains responsible for determining which room the user is allowed to enter.
+
+So the final principle I'd give your coding agent is:
+
+Jitsi is the conferencing engine embedded into the React application. React is the user experience. FastAPI is the application/control layer. PostgreSQL is the system of record. The AI/speech layer sits outside Jitsi and consumes normalized meeting/transcript events.

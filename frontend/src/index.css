@@ -1,0 +1,222 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 47.4% 11.2%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   AI status / activity micro-animations
+   ------------------------------------------------------------------------- */
+.ai-busy {
+  animation: ai-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ai-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+}
+
+.ai-listening-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-listening-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  animation: ai-bounce 1.2s ease-in-out infinite;
+}
+
+.ai-listening-dots .dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ai-listening-dots .dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ai-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Login screen background animation
+   ------------------------------------------------------------------------- */
+.login-bg {
+  background: linear-gradient(135deg, hsl(210 40% 98%), hsl(214 32% 94%));
+}
+
+.login-shape {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.5;
+  animation: float 14s ease-in-out infinite;
+}
+
+.login-shape-1 {
+  width: 260px;
+  height: 260px;
+  background: hsl(222 47% 11% / 0.07);
+  top: -70px;
+  left: -70px;
+}
+
+.login-shape-2 {
+  width: 170px;
+  height: 170px;
+  background: hsl(0 72% 50% / 0.07);
+  bottom: -50px;
+  right: 12%;
+  animation-delay: -5s;
+}
+
+.login-shape-3 {
+  width: 120px;
+  height: 120px;
+  background: hsl(222 47% 11% / 0.05);
+  top: 22%;
+  right: 22%;
+  animation-delay: -9s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(12px, -24px);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   App background (reuses the login gradient) + meeting transition
+   ------------------------------------------------------------------------- */
+.app-bg {
+  background: linear-gradient(135deg, hsl(210 40% 98%), hsl(214 32% 94%));
+}
+
+.meeting-fade {
+  animation: fade-slide 0.4s ease-out;
+}
+
+@keyframes fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Floating assistant button
+   ------------------------------------------------------------------------- */
+.assistant-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  animation: fab-pulse 2.2s ease-in-out infinite;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.assistant-fab:hover {
+  transform: scale(1.05);
+  background: hsl(222 47% 20%);
+}
+
+.assistant-fab:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+@keyframes fab-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsla(222, 47%, 11%, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 14px hsla(222, 47%, 11%, 0);
+  }
+}
+
+/* Accessibility: respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .login-shape,
+  .ai-listening-dots .dot,
+  .ai-busy,
+  .assistant-fab,
+  .meeting-fade {
+    animation: none;
+  }
+}

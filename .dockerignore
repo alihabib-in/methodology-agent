@@ -1,0 +1,11 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+
+models
+tests
+logs
+tmp
+.env
