@@ -220,3 +220,75 @@
     animation: none;
   }
 }
+
+/* -------------------------------------------------------------------------
+   Dashboard animations
+   ------------------------------------------------------------------------- */
+@keyframes dash-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dash-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dash-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+  50% {
+    box-shadow: 0 0 14px 3px rgba(59, 130, 246, 0.55);
+  }
+}
+
+@keyframes dash-ping-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.dash-fade-in {
+  animation: dash-fade-in 0.5s ease both;
+}
+
+.dash-slide-in {
+  animation: dash-slide-in 0.4s ease both;
+}
+
+.dash-running {
+  animation: dash-glow 1.6s ease-in-out infinite;
+}
+
+.dash-dot-ring {
+  animation: dash-ping-soft 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-fade-in,
+  .dash-slide-in,
+  .dash-running,
+  .dash-dot-ring {
+    animation: none;
+  }
+}

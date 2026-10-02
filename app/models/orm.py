@@ -6,7 +6,7 @@
 
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, Float, String, Text
+from sqlalchemy import JSON, DateTime, Float, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -87,5 +87,127 @@ class MeetingEvent(Base):
     meeting_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     session_id: Mapped[str | None] = mapped_column(String(20), nullable=True, index=True)
     event_type: Mapped[str] = mapped_column(String(50), index=True)
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+# --- Agentic Workflow domain (Phase A) -------------------------------------
+
+
+class SourceRecord(Base):
+    """An original input (meeting transcript, Word document, etc.)."""
+
+    __tablename__ = "sources"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    source_type: Mapped[str] = mapped_column(String(30), index=True)
+    data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EvidenceRecord(Base):
+    """Extracted, traceable evidence pointing back to a source."""
+
+    __tablename__ = "evidence"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    source_id: Mapped[str] = mapped_column(String(40), index=True)
+    data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class MethodologyCaseRecord(Base):
+    """The single authoritative methodology case."""
+
+    __tablename__ = "methodology_cases"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    title: Mapped[str] = mapped_column(String(255), default="")
+    status: Mapped[str] = mapped_column(String(30), default="draft", index=True)
+    data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+
+
+class CaseArtifactRecord(Base):
+    """A versioned artifact produced by an agent during a workflow stage."""
+
+    __tablename__ = "case_artifacts"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    case_id: Mapped[str] = mapped_column(String(40), index=True)
+    data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+# --- Workflow orchestration (Phase B) ----------------------------------------
+
+
+class WorkflowStageRecord(Base):
+    """One row per (case, stage) capturing the current stage status."""
+
+    __tablename__ = "workflow_stages"
+    __table_args__ = (UniqueConstraint("case_id", "stage_id", name="uq_workflow_stage"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(String(40), index=True)
+    stage_id: Mapped[str] = mapped_column(String(60))
+    status: Mapped[str] = mapped_column(String(30), default="PENDING")
+    agent_id: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+
+
+class AgentTaskRecord(Base):
+    """Append-only record of each agent execution."""
+
+    __tablename__ = "agent_tasks"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(String(40), index=True)
+    stage_id: Mapped[str] = mapped_column(String(60))
+    agent_id: Mapped[str] = mapped_column(String(60))
+    status: Mapped[str] = mapped_column(String(30), default="PENDING")
+    inputs: Mapped[dict] = mapped_column(JSON, default=dict)
+    outputs: Mapped[dict] = mapped_column(JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
+class ApprovalRecord(Base):
+    """Append-only record of human approval decisions."""
+
+    __tablename__ = "approvals"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(String(40), index=True)
+    stage_id: Mapped[str] = mapped_column(String(60))
+    decision: Mapped[str] = mapped_column(String(30))
+    decided_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AuditLogRecord(Base):
+    """Append-only audit trail of workflow events."""
+
+    __tablename__ = "audit_log"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(String(40), index=True)
+    event_type: Mapped[str] = mapped_column(String(60), index=True)
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

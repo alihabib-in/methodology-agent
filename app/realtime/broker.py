@@ -26,6 +26,7 @@ class Subscription:
 class EventBroker:
     def __init__(self) -> None:
         self._subs: dict[str, list[Subscription]] = {}
+        self._global_subs: list[Subscription] = []
         self._lock = threading.Lock()
         self._sequences: dict[str, int] = {}
         self._loop: asyncio.AbstractEventLoop | None = None
@@ -38,8 +39,19 @@ class EventBroker:
             self._subs.setdefault(session_id, []).append(sub)
         return sub
 
+    def subscribe_all(self) -> Subscription:
+        """Subscribe to a broadcast of every published event (dashboard)."""
+        queue: asyncio.Queue = asyncio.Queue(maxsize=2000)
+        sub = Subscription(session_id="*", queue=queue)
+        self._loop = asyncio.get_running_loop()
+        with self._lock:
+            self._global_subs.append(sub)
+        return sub
+
     def unsubscribe(self, sub: Subscription) -> None:
         with self._lock:
+            if sub in self._global_subs:
+                self._global_subs.remove(sub)
             subs = self._subs.get(sub.session_id)
             if subs and sub in subs:
                 subs.remove(sub)
@@ -59,8 +71,9 @@ class EventBroker:
             seq = self._sequences.get(session_id, 0) + 1
             self._sequences[session_id] = seq
             subs = list(self._subs.get(session_id, []))
+            global_subs = list(self._global_subs)
 
-        if not subs:
+        if not subs and not global_subs:
             return
 
         envelope = build_envelope(
@@ -72,6 +85,8 @@ class EventBroker:
         )
         data = envelope.model_dump()
         for sub in subs:
+            self._put(sub, data)
+        for sub in global_subs:
             self._put(sub, data)
 
     def _put(self, sub: Subscription, data: dict[str, Any]) -> None:

@@ -9,3 +9,6 @@ qdrant-client==1.14.3
 PyJWT
 pytest
 edge-tts
+python-docx
+python-multipart
+pypdf
