@@ -13,6 +13,7 @@ models/*.gguf
 
 logs/
 tmp/
+*.log
 
 # Jitsi secrets + generated config/certs
 jitsi/.env
