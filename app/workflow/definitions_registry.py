@@ -17,14 +17,24 @@ def methodology_workflow() -> WorkflowDefinition:
         stages=[
             StageDefinition(id="requirement_case", agent="methodology_case_agent"),
             StageDefinition(
+                id="case_analysis",
+                agent="case_analysis_agent",
+                depends_on=["requirement_case"],
+            ),
+            StageDefinition(
+                id="data_acquisition",
+                agent="data_acquisition_agent",
+                depends_on=["case_analysis"],
+            ),
+            StageDefinition(
                 id="international_research",
                 agent="international_research_agent",
-                depends_on=["requirement_case"],
+                depends_on=["case_analysis", "data_acquisition"],
             ),
             StageDefinition(
                 id="standardized_methodology",
                 agent="standardized_methodology_agent",
-                depends_on=["international_research"],
+                depends_on=["international_research", "data_acquisition"],
                 approval_required=True,
             ),
             StageDefinition(
@@ -48,7 +58,7 @@ def methodology_workflow() -> WorkflowDefinition:
             StageDefinition(
                 id="scad_methodology",
                 agent="scad_methodology_agent",
-                depends_on=["standardized_methodology", "scad_input_analysis", "clarification"],
+                depends_on=["standardized_methodology", "scad_input_analysis", "clarification", "data_acquisition"],
                 approval_required=True,
             ),
             StageDefinition(

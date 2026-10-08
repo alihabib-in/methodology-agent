@@ -28,6 +28,7 @@ class IntakeRequest(BaseModel):
     text: str
     language: str | None = None
     title: str | None = None
+    force: bool = False
 
 
 class ConfirmRequest(BaseModel):
@@ -96,7 +97,7 @@ def create_case(body: IntakeRequest, request: Request):
         raise HTTPException(status_code=500, detail="elicitation agent not registered")
 
     detection = detect_methodology_request(body.text, body.language)
-    if not detection.is_methodology_request:
+    if not detection.is_methodology_request and not body.force:
         raise HTTPException(status_code=422, detail=detection.model_dump())
 
     result = elicitation.run({"text": body.text, "language": body.language})
@@ -112,7 +113,7 @@ def create_case(body: IntakeRequest, request: Request):
             language=outputs.get("extraction", {}).get("language", "unknown"),
         )
         evidence_refs = _evidence_from_extraction(session, source.source_id, outputs)
-        proposal = build_case_proposal(outputs, evidence_refs=evidence_refs)
+        proposal = build_case_proposal(outputs, evidence_refs=evidence_refs, title=body.title)
         proposal["status"] = "requirements_review"
         case = case_repo.create_case(session, title=body.title or "", **proposal)
         workflow_repo.save_stage_states(session, case.case_id, {"requirement_case": "WAITING_FOR_HUMAN"})
@@ -154,7 +155,7 @@ def create_case_from_document(
         evidence_refs = _evidence_from_extraction(
             session, source.source_id, outputs, source_type="word_document", filename=filename
         )
-        proposal = build_case_proposal(outputs, evidence_refs=evidence_refs)
+        proposal = build_case_proposal(outputs, evidence_refs=evidence_refs, title=title or parsed.title)
         proposal["status"] = "requirements_review"
         case = case_repo.create_case(session, title=title or parsed.title or "", **proposal)
         workflow_repo.save_stage_states(session, case.case_id, {"requirement_case": "WAITING_FOR_HUMAN"})
@@ -304,3 +305,24 @@ def get_stage_output(case_id: str, stage_id: str, request: Request):
         raise HTTPException(status_code=404, detail="case not found")
     with session_scope() as session:
         return workflow_repo.latest_task_output(session, case_id, stage_id)
+
+
+@router.post("/{case_id}/reset")
+def reset_case(case_id: str):
+    with session_scope() as session:
+        case = case_repo.get_case(session, case_id)
+        if case is None:
+            raise HTTPException(status_code=404, detail="case not found")
+
+        workflow_repo.reset_case_workflow(session, case_id)
+        workflow_repo.save_stage_states(
+            session, case_id, {"requirement_case": "WAITING_FOR_HUMAN"}
+        )
+
+        case.status = CaseStatus.requirements_review
+        case.current_stage = "requirement_case"
+        case.completed_stages = []
+        case.pending_actions = ["requirement_case"]
+        case_repo.save_case(session, case)
+
+    return {"case_id": case_id, "status": "requirements_review"}

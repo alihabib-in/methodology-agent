@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 const STAGES = [
   { id: 'requirement_case', label: 'Requirement Case', icon: '🎯' },
+  { id: 'case_analysis', label: 'Case Analysis', icon: '🧠' },
+  { id: 'data_acquisition', label: 'Data Acquisition', icon: '📊' },
   { id: 'international_research', label: 'International Research', icon: '🔍' },
   { id: 'standardized_methodology', label: 'Standardized Methodology', icon: '📐' },
   { id: 'scad_input_analysis', label: 'SCAD Input Analysis', icon: '📥' },
@@ -13,9 +15,11 @@ const STAGES = [
 ];
 
 const DOC_STAGES = [
+  'data_acquisition',
   'international_research',
   'standardized_methodology',
   'scad_methodology',
+  'indicator_development',
   'gap_assessment',
 ];
 
@@ -51,6 +55,8 @@ const EVENT_LABEL = {
   'approval.rejected': 'Approval rejected',
   'workflow.completed': 'Workflow completed',
 };
+
+const DEFAULT_INPUT = `We need to develop a methodology for the AI Adoption Index in Abu Dhabi, based on the 2025 AI survey. The index should cover government entities, large private companies, SMEs, and startups. Data will come from the survey, telecom providers, and cloud providers. We need to define the sampling frame, KPIs, weighting scheme, sector classification, and data privacy rules. The definition of "AI adoption" is not yet agreed and needs confirmation.`;
 
 function wsUrl() {
   const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -137,12 +143,95 @@ function GapDoc({ gap }) {
   );
 }
 
+function IndicatorsDoc({ indicators }) {
+  if (!indicators?.length) return null;
+  return (
+    <div className="dash-fade-in rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <h3 className="mb-3 text-lg font-semibold text-slate-100">Indicator Cards</h3>
+      <div className="space-y-3">
+        {indicators.map((ind) => (
+          <div key={ind.code || ind.name} className="rounded-lg bg-slate-800/50 p-3">
+            <div className="font-semibold text-blue-300">
+              {ind.code ? `${ind.code} — ` : ''}{ind.name}
+            </div>
+            {ind.description && (
+              <p className="mt-1 text-sm text-slate-300">{ind.description}</p>
+            )}
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+              {ind.measurement_unit && <span>Unit: {ind.measurement_unit}</span>}
+              {ind.publication_frequency && <span>Frequency: {ind.publication_frequency}</span>}
+              {ind.theme && <span>Theme: {ind.theme}</span>}
+              {ind.reference_period && <span>Ref. period: {ind.reference_period}</span>}
+            </div>
+            {ind.statistical_population && (
+              <p className="mt-1 text-xs text-slate-400">{ind.statistical_population}</p>
+            )}
+            {Array.isArray(ind.data_sources) && ind.data_sources.length > 0 && (
+              <p className="mt-1 text-xs text-slate-400">
+                Sources: {ind.data_sources.join(', ')}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DataSourcesDoc({ dataAcquisition }) {
+  const datasets =
+    dataAcquisition?.datasets || dataAcquisition?.evidence_package?.datasets || [];
+  const queries = dataAcquisition?.evidence_package?.queries || [];
+  if (!datasets.length) return null;
+  return (
+    <div className="dash-fade-in rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <h3 className="mb-3 text-lg font-semibold text-slate-100">Data sources (retrieved)</h3>
+      {queries.length > 0 && (
+        <p className="mb-3 text-xs text-slate-500">
+          Search queries: {queries.join(', ')}
+        </p>
+      )}
+      <div className="space-y-2">
+        {datasets.map((d) => (
+          <div key={`${d.portal}-${d.dataset_id}`} className="rounded-lg bg-slate-800/50 p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-mono text-xs uppercase text-blue-300">{d.portal}</span>
+              <span className="font-mono text-xs text-slate-500">{d.dataset_id}</span>
+            </div>
+            <div className="font-medium text-slate-200">{d.title}</div>
+            {d.portal === 'worldbank' && Array.isArray(d.latest) && d.latest.length > 0 && (
+              <div className="mt-1 text-xs text-slate-400">
+                {d.latest
+                  .slice(0, 3)
+                  .map((v) => `${v.year}: ${v.value}`)
+                  .join(' · ')}
+              </div>
+            )}
+            {d.portal === 'eurostat' && d.data_points != null && (
+              <div className="mt-1 text-xs text-slate-400">
+                {d.data_points} data points
+                {Array.isArray(d.dimensions) && d.dimensions.length > 0
+                  ? ` · ${d.dimensions.join(', ')}`
+                  : ''}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [connected, setConnected] = useState('connecting');
   const [cases, setCases] = useState({});
   const [feed, setFeed] = useState([]);
   const [documents, setDocuments] = useState({});
   const [busy, setBusy] = useState(false);
+  const [inputText, setInputText] = useState(DEFAULT_INPUT);
+  const [creating, setCreating] = useState(false);
+  const [createStatus, setCreateStatus] = useState('');
+  const [createError, setCreateError] = useState('');
 
   async function approve(caseId, stageId, decision) {
     setBusy(true);
@@ -160,6 +249,80 @@ export default function Dashboard() {
     setBusy(true);
     try {
       await api(`/cases/${caseId}/advance`, { method: 'POST', body: JSON.stringify({}) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createCase() {
+    const text = inputText.trim();
+    if (!text) {
+      setCreateError('Please enter a methodology case description first.');
+      return;
+    }
+    if (creating) return;
+    setCreating(true);
+    setCreateError('');
+    setCreateStatus('Creating meeting case…');
+    try {
+      const res = await api('/cases', {
+        method: 'POST',
+        body: JSON.stringify({ text, language: 'en', title: 'New Methodology Case', force: true }),
+      });
+      const data = await res.json();
+      const caseId = data?.case?.case_id;
+      if (!caseId) {
+        const detail = data?.detail;
+        throw new Error(detail?.reason || (detail && JSON.stringify(detail)) || 'no case id returned');
+      }
+
+      setCases((prev) => ({
+        ...prev,
+        [caseId]: {
+          title: data.case.title,
+          objective: data.case.objective,
+          status: data.case.status,
+          stages: { requirement_case: { status: 'WAITING_FOR_HUMAN' } },
+          updatedAt: Date.now(),
+        },
+      }));
+
+      setCreateStatus('Confirming case…');
+      await api(`/cases/${caseId}/confirm`, {
+        method: 'POST',
+        body: JSON.stringify({ decision: 'confirm' }),
+      });
+      setCreateStatus('Running agents…');
+      await api(`/cases/${caseId}/advance`, { method: 'POST', body: JSON.stringify({}) });
+      setCreateStatus('');
+    } catch (err) {
+      console.error('createCase failed', err);
+      setCreateError(String(err?.message || err));
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function resetCase(caseId) {
+    setBusy(true);
+    try {
+      await api(`/cases/${caseId}/reset`, { method: 'POST', body: JSON.stringify({}) });
+      const detailRes = await api(`/cases/${caseId}`);
+      const detail = await detailRes.json();
+      const stages = {};
+      for (const [sid, status] of Object.entries(detail.workflow?.stages || {})) {
+        stages[sid] = { status };
+      }
+      setCases((prev) => ({
+        ...prev,
+        [caseId]: {
+          ...(prev[caseId] || {}),
+          status: detail.case?.status,
+          stages,
+          updatedAt: Date.now(),
+        },
+      }));
+      setDocuments((prev) => ({ ...prev, [caseId]: {} }));
     } finally {
       setBusy(false);
     }
@@ -259,6 +422,53 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    async function loadCases() {
+      try {
+        const res = await api('/cases');
+        const list = await res.json();
+        for (const c of list) {
+          const detailRes = await api(`/cases/${c.case_id}`);
+          if (!detailRes.ok) continue;
+          const detail = await detailRes.json();
+          const stages = {};
+          for (const [sid, status] of Object.entries(detail.workflow?.stages || {})) {
+            stages[sid] = { status };
+          }
+          for (const a of detail.audit || []) {
+            const p = a.payload || {};
+            if (!p.stage) continue;
+            const st = stages[p.stage] || (stages[p.stage] = {});
+            if (Array.isArray(p.reasoning) && p.reasoning.length) st.reasoning = p.reasoning;
+            if (p.agent) st.agent = p.agent;
+            if (p.output_keys) st.output_keys = p.output_keys;
+          }
+          setCases((prev) => ({
+            ...prev,
+            [c.case_id]: {
+              ...(prev[c.case_id] || {}),
+              title: c.title,
+              objective: c.objective,
+              status: c.status,
+              stages: { ...(prev[c.case_id]?.stages || {}), ...stages },
+              updatedAt:
+                prev[c.case_id]?.updatedAt || new Date(c.created_at || Date.now()).getTime(),
+            },
+          }));
+
+          for (const stageId of DOC_STAGES) {
+            if (stages[stageId]?.status === 'COMPLETED') {
+              await fetchOutput(c.case_id, stageId);
+            }
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    loadCases();
+  }, []);
+
   const caseIds = Object.keys(cases).sort((a, b) => cases[b].updatedAt - cases[a].updatedAt);
   const activeCaseId = caseIds[0];
   const activeCase = activeCaseId ? cases[activeCaseId] : null;
@@ -275,8 +485,10 @@ export default function Dashboard() {
     ? STAGES.filter((s) => activeCase.stages[s.id]?.reasoning?.length)
     : [];
 
+  const dataAcquisition = activeDocs.data_acquisition;
   const standardized = activeDocs.standardized_methodology?.methodology;
   const scadMethodology = activeDocs.scad_methodology?.methodology;
+  const indicators = activeDocs.indicator_development?.indicators;
   const gap = activeDocs.gap_assessment?.gap_assessment;
 
   return (
@@ -302,6 +514,31 @@ export default function Dashboard() {
         </div>
       </header>
 
+      <section className="mb-6 rounded-xl border border-slate-800 bg-slate-900 p-5">
+        <h2 className="mb-3 text-sm uppercase tracking-widest text-slate-400">
+          Trigger — create a meeting case and run the agents
+        </h2>
+        <textarea
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          rows={3}
+          className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 font-mono text-sm text-slate-100"
+        />
+        <button
+          onClick={createCase}
+          disabled={creating}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500 disabled:opacity-50"
+        >
+          {creating ? 'Working…' : '▶ Create Meeting Case & Run Agents'}
+        </button>
+        {createStatus && (
+          <p className="mt-2 text-sm text-blue-300">{createStatus}</p>
+        )}
+        {createError && (
+          <p className="mt-2 text-sm text-red-400">{createError}</p>
+        )}
+      </section>
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <section className="rounded-xl border border-slate-800 bg-slate-900 p-5 xl:col-span-2">
           <div className="mb-4 flex items-center justify-between">
@@ -323,8 +560,26 @@ export default function Dashboard() {
                   ▶ Advance workflow
                 </button>
               )}
+              {activeCaseId && (
+                <button
+                  onClick={() => resetCase(activeCaseId)}
+                  disabled={busy}
+                  className="rounded-lg bg-slate-700 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
+                >
+                  ↺ Reset
+                </button>
+              )}
             </div>
           </div>
+
+          {activeCase && (
+            <div className="mb-3 rounded-lg bg-slate-800/60 p-3">
+              <div className="font-semibold text-slate-100">{activeCase.title || activeCaseId}</div>
+              {activeCase.objective && (
+                <div className="text-sm text-slate-300">{activeCase.objective}</div>
+              )}
+            </div>
+          )}
 
           {activeCase ? (
             <ol className="space-y-2">
@@ -457,12 +712,13 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {(standardized || scadMethodology || gap) && (
+      {(dataAcquisition || standardized || scadMethodology || indicators || gap) && (
         <section className="mt-6">
           <h2 className="mb-3 text-sm uppercase tracking-widest text-slate-400">
             Output documents
           </h2>
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            {dataAcquisition && <DataSourcesDoc dataAcquisition={dataAcquisition} />}
             {standardized && (
               <MethodologyDoc
                 title={standardized.title || 'Standardized Methodology'}
@@ -475,6 +731,7 @@ export default function Dashboard() {
                 sections={scadMethodology.sections}
               />
             )}
+            {indicators && <IndicatorsDoc indicators={indicators} />}
             {gap && <GapDoc gap={gap} />}
           </div>
         </section>

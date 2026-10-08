@@ -10,9 +10,20 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
 from app.workflow.contracts import Agent, AgentContract, AgentResult
+
+MAX_DOCUMENT_CHARS = 2000
+MAX_DOCUMENTS = 3
+
+
+def _truncate(text: str, limit: int = MAX_DOCUMENT_CHARS) -> str:
+    text = (text or "").strip()
+    if len(text) <= limit:
+        return text
+    return text[:limit] + "\n...[truncated]"
+
 
 SYSTEM_PROMPT = """You are a statistical methodology analysis agent.
 
@@ -82,23 +93,30 @@ class SCADInputAgent(Agent):
         methodology = standardized.get("methodology") or {}
         documents = (inputs or {}).get("scad_documents") or []
 
+        if not objective:
+            return AgentResult(
+                agent_id=self.contract.id,
+                status="failed",
+                recommendations=[{"error": "missing objective in case context"}],
+            )
+
         sections_text = "\n".join(
             f"{s.get('number')}. {s.get('title')}\n{s.get('content', '')}"
             for s in methodology.get("sections", [])
         )
         documents_text = "\n\n".join(
-            f"[document {i + 1}]\n{d}" for i, d in enumerate(documents)
-        )
+            f"[document {i + 1}]\n{_truncate(d)}"
+            for i, d in enumerate(documents[:MAX_DOCUMENTS])
+        ) or "(none)"
 
         user_prompt = USER_TEMPLATE.format(
-            objective=objective or "statistical indicator",
+            objective=objective,
             standardized=sections_text or "(none)",
             documents=documents_text or "(none)",
         )
 
         try:
-            raw = self._llm.chat(SYSTEM_PROMPT, user_prompt, max_tokens=2500)
-            data = json.loads(extract_json(raw))
+            data = chat_json(self._llm, SYSTEM_PROMPT, user_prompt, max_tokens=2500)
         except Exception as exc:  # noqa: BLE001
             return AgentResult(
                 agent_id=self.contract.id,

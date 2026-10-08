@@ -69,6 +69,7 @@ Return valid JSON only.
 
 EXTRACTION_JSON_SCHEMA = """{
   "language": "ar",
+  "objective": "one-sentence statement of the specific indicator or methodology being requested (use the exact name, e.g. 'AI Adoption Index for Abu Dhabi')",
   "summary": "short English summary of the methodology intent",
   "requirements": [
     {"concept": "canonical_concept", "value": "value", "domain": "domain",
@@ -125,6 +126,9 @@ Rules:
 - Preserve original Arabic evidence inside statements where possible.
 - Use canonical English concepts (for example: "active establishment").
 - Set "language" to exactly one of: ar, en, mixed.
+- Set "objective" to the specific statistical indicator or methodology the team
+  is asked to develop, in one sentence. If the discussion names an index or
+  indicator (e.g. "AI Adoption Index"), use that exact name.
 - The recommended_question must be written in English and target the single
   most important missing methodology element.
 """

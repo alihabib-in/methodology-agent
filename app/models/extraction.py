@@ -83,6 +83,7 @@ class RecommendedQuestion(BaseModel):
 
 class ExtractionResult(BaseModel):
     language: str = "auto"
+    objective: str | None = None
     summary: str | None = None
     requirements: list[Requirement] = Field(default_factory=list)
     definitions: list[Definition] = Field(default_factory=list)

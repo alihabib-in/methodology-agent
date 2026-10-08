@@ -16,6 +16,7 @@ from app.core.db import session_scope
 from app.models.case import CaseStatus, MethodologyCase
 from app.workflow import repository as workflow_repo
 from app.workflow.conditions import merge_conditions
+from app.workflow.contracts import AgentResult
 from app.workflow.definitions import WorkflowDefinition
 from app.workflow.engine import WorkflowEngine
 from app.workflow.executor import Executor, InProcessExecutor
@@ -42,6 +43,32 @@ class WorkflowService:
             if stage_id in engine.stage_states:
                 engine.stage_states[stage_id] = StageStatus(status)
         return engine
+
+    def _restore_stage_outputs(
+        self,
+        session,
+        workflow: WorkflowDefinition,
+        case_id: str,
+        engine: WorkflowEngine,
+    ) -> None:
+        """Rehydrate prior stage outputs into the engine's in-memory cache.
+
+        The engine is rebuilt on every ``advance`` call with only stage *states*
+        restored, so a stage that runs after an approval gate would otherwise
+        receive empty inputs from its upstream dependencies. Pull the last
+        successful task output from persistence for every completed stage so
+        dependency injection works across ``advance`` boundaries.
+        """
+        for stage in workflow.stages:
+            if engine.stage_states.get(stage.id) != StageStatus.COMPLETED:
+                continue
+            outputs = workflow_repo.latest_task_output(session, case_id, stage.id)
+            if outputs:
+                engine.stage_outputs[stage.id] = AgentResult(
+                    agent_id=stage.agent,
+                    outputs=outputs,
+                    status="succeeded",
+                )
 
     def _on_event(self, session, case_id: str):
         def handler(event_type: str, payload: dict) -> None:
@@ -110,6 +137,14 @@ class WorkflowService:
         condition_context: dict[str, bool] | None = None,
     ) -> tuple[MethodologyCase, list[dict[str, Any]]]:
         inputs = dict(inputs or {})
+        # Make the case's problem statement available to every agent so they are
+        # contextually aware of what they are researching / producing.
+        inputs.setdefault("objective", case.objective or "")
+        inputs.setdefault("domain", case.domain or "")
+        inputs.setdefault("topic", case.topic or "")
+        inputs.setdefault("title", case.title or "")
+        inputs.setdefault("explicit_requirements", case.explicit_requirements or [])
+        inputs.setdefault("constraints", case.constraints or [])
         with session_scope() as session:
             scad_documents = self._scad_documents(session, case.case_id)
             context = merge_conditions(self._base_context(session, case.case_id), condition_context)
@@ -121,6 +156,7 @@ class WorkflowService:
 
             stage_states = workflow_repo.load_stage_states(session, case.case_id)
             engine = self._build_engine(workflow, stage_states)
+            self._restore_stage_outputs(session, workflow, case.case_id, engine)
             engine.on_event = self._on_event(session, case.case_id)
 
             ran = engine.advance(inputs=inputs, condition_context=context)

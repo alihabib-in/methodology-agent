@@ -13,12 +13,19 @@ def _field_value(state: dict, field: str):
     return (state.get(field) or {}).get("value")
 
 
-def build_case_proposal(outputs: dict, evidence_refs: list[str] | None = None) -> dict:
+def build_case_proposal(outputs: dict, evidence_refs: list[str] | None = None, title: str | None = None) -> dict:
     state = outputs.get("methodology_state") or {}
+    extraction = outputs.get("extraction") or {}
     summary = outputs.get("summary") or ""
     gaps = outputs.get("gaps") or []
 
-    objective = _field_value(state, "objective") or summary or None
+    objective = (
+        (extraction or {}).get("objective")
+        or _field_value(state, "objective")
+        or title
+        or summary
+        or None
+    )
 
     explicit_requirements: list[str] = []
     for item in state.get("indicators", []):

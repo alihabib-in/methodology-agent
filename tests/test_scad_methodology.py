@@ -33,7 +33,7 @@ def test_scad_methodology_agent():
     )
     assert result.status == "succeeded"
     m = result.outputs["methodology"]
-    assert len(m["sections"]) == 9
+    assert len(m["sections"]) == 7
     assert m["sections"][0]["content"].startswith("Background")
     assert "[Aligned with:" in m["sections"][0]["content"]
     assert m["indicator_codes"] == ["IND-001"]

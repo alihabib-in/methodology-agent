@@ -9,10 +9,26 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
-from app.models.scad_methodology import SCAD_SECTIONS, SCADMethodology, SCADSection
+from app.models.scad_methodology import SCAD_SECTIONS, SCAD_SUBSECTION_GUIDE, SCADMethodology, SCADSection
+from app.reference.corpus import load_scad_methodology_style
 from app.workflow.contracts import Agent, AgentContract, AgentResult
+
+
+def _data_text(datasets: list[dict]) -> str:
+    if not datasets:
+        return "- (no real data retrieved)"
+    lines = []
+    for d in datasets:
+        latest = d.get("latest") or []
+        if d.get("portal") == "worldbank":
+            sample = "; ".join(f"{v.get('year', '?')}: {v.get('value')}" for v in latest[:3])
+        else:
+            sample = f"{d.get('data_points', len(latest))} data points"
+        lines.append(f"- [{d['portal']}] {d.get('title')} ({d.get('dataset_id')}): {sample}")
+    return "\n".join(lines)
+
 
 SYSTEM_PROMPT = """You are a statistical methodology documentation agent.
 
@@ -27,7 +43,9 @@ Apply these annotation conventions inline:
 - "[To be confirmed by SCAD]" for anything unconfirmed (fill from international
   best practice rather than leaving blank).
 
-Write formal, objective English prose. Return valid JSON only."""
+Write formal, objective English prose.
+""" + load_scad_methodology_style() + """
+Return valid JSON only."""
 
 USER_TEMPLATE = """Methodology context:
 
@@ -45,8 +63,15 @@ Clarification answers:
 Approved indicator specifications:
 {indicators}
 
+Real data retrieved from public portals (list these as data sources and cite
+their figures factually):
+{data}
+
 Produce the SCAD-specific methodology covering these sections:
 {sections}
+
+Required subsection structure (write each section with its subsections):
+{subsections}
 
 For each section write formal prose paragraphs. Return JSON with this shape:
 {{
@@ -90,9 +115,16 @@ class SCADMethodologyAgent(Agent):
         clarification = (inputs or {}).get("clarification") or {}
         indicators = (inputs or {}).get("indicator_development") or {}
 
+        if not objective:
+            return AgentResult(
+                agent_id=self.contract.id,
+                status="failed",
+                recommendations=[{"error": "missing objective in case context"}],
+            )
+
         methodology = standardized.get("methodology") or {}
         standardized_text = "\n".join(
-            f"{s.get('number')}. {s.get('title')}: {s.get('content', '')}"
+            f"{s.get('number')}. {s.get('title')}: {(s.get('content', '') or '')[:150]}"
             for s in methodology.get("sections", [])
         )
         scad_text = "\n".join(
@@ -103,22 +135,26 @@ class SCADMethodologyAgent(Agent):
             f"- {q.get('question', '')}" for q in clarification.get("question_set", [])
         )
         indicator_text = "\n".join(
-            f"- {i.get('code', '')} {i.get('name', '')}: {i.get('definition', '')}"
+            f"- {i.get('code', '')} {i.get('name', '')}: {i.get('description', '')}"
             for i in indicators.get("indicators", [])
         )
+        data_acq = (inputs or {}).get("data_acquisition") or {}
+        datasets = data_acq.get("datasets") or data_acq.get("evidence_package", {}).get("datasets") or []
+        data_text = _data_text(datasets)
 
         user_prompt = USER_TEMPLATE.format(
-            objective=objective or "statistical indicator",
+            objective=objective,
             standardized=standardized_text or "(none)",
             scad_practice=scad_text or "(none)",
             clarification=clarification_text or "(none)",
             indicators=indicator_text or "(none)",
+            data=data_text,
             sections="\n".join(f"{n}. {t}" for n, t in SCAD_SECTIONS),
+            subsections=SCAD_SUBSECTION_GUIDE,
         )
 
         try:
-            raw = self._llm.chat(SYSTEM_PROMPT, user_prompt, max_tokens=2500)
-            data = json.loads(extract_json(raw))
+            data = chat_json(self._llm, SYSTEM_PROMPT, user_prompt, max_tokens=2000)
         except Exception as exc:  # noqa: BLE001
             return AgentResult(
                 agent_id=self.contract.id,

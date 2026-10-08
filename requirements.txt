@@ -12,3 +12,4 @@ edge-tts
 python-docx
 python-multipart
 pypdf
+openpyxl

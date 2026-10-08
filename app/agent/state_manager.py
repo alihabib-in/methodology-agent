@@ -27,6 +27,9 @@ class StateManager:
         self.state = MethodologyState()
 
     def apply(self, extraction: ExtractionResult) -> MethodologyState:
+        if extraction.objective:
+            self._set_field("objective", extraction.objective, "proposed", 0.85)
+
         for req in extraction.requirements:
             self._apply_requirement(req)
 

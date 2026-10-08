@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
 from app.workflow.contracts import Agent, AgentContract, AgentResult
 
@@ -61,6 +61,13 @@ class MethodologyQAAgent(Agent):
         objective = (inputs or {}).get("objective") or ""
         scad_input = (inputs or {}).get("scad_input_analysis") or {}
 
+        if not objective:
+            return AgentResult(
+                agent_id=self.contract.id,
+                status="failed",
+                recommendations=[{"error": "missing objective in case context"}],
+            )
+
         gaps_text = "\n".join(
             f"- {g.get('dimension', '')}: {g.get('description', '')}"
             for g in scad_input.get("gaps", [])
@@ -70,14 +77,13 @@ class MethodologyQAAgent(Agent):
         )
 
         user_prompt = USER_TEMPLATE.format(
-            objective=objective or "statistical indicator",
+            objective=objective,
             gaps=gaps_text or "(none)",
             questions=questions_text or "(none)",
         )
 
         try:
-            raw = self._llm.chat(SYSTEM_PROMPT, user_prompt, max_tokens=1500)
-            data = json.loads(extract_json(raw))
+            data = chat_json(self._llm, SYSTEM_PROMPT, user_prompt, max_tokens=1500)
         except Exception as exc:  # noqa: BLE001
             return AgentResult(
                 agent_id=self.contract.id,

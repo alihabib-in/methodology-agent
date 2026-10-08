@@ -60,6 +60,34 @@ def extract_json(text: str) -> str:
     return text[start:]
 
 
+def chat_json(
+    llm,
+    system_prompt: str,
+    user_prompt: str,
+    max_tokens: int | None = None,
+    retries: int = 1,
+) -> dict:
+    """Call the LLM and parse a JSON object, retrying on truncation/invalid output.
+
+    The local model occasionally truncates long JSON; on failure we retry once
+    with an explicit compactness instruction so the response fits the output limit.
+    """
+    last_error: Exception | None = None
+    prompt = user_prompt
+    for attempt in range(retries + 1):
+        try:
+            raw = llm.chat(system_prompt, prompt, max_tokens=max_tokens)
+            return json.loads(extract_json(raw))
+        except Exception as exc:  # noqa: BLE001 - retry once before surfacing
+            last_error = exc
+            prompt = user_prompt + (
+                "\n\nIMPORTANT: The previous response was truncated or not valid JSON. "
+                "Return ONLY complete, valid JSON and keep every field to at most "
+                "one short sentence so the entire response fits the output limit."
+            )
+    raise last_error  # type: ignore[misc]
+
+
 class Extractor:
     """Runs LLM extraction and validates the result against Pydantic models."""
 

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
 from app.models.compliance import QAFinding, QAReport
 from app.workflow.contracts import Agent, AgentContract, AgentResult
@@ -95,13 +95,14 @@ class ComplianceAgent(Agent):
         standardized_text = "\n".join(
             f"{s.get('number')}. {s.get('title')}" for s in standardized.get("methodology", {}).get("sections", [])
         )
+        data: dict = {}
         try:
-            raw = self._llm.chat(
+            data = chat_json(
+                self._llm,
                 SYSTEM_PROMPT,
                 USER_TEMPLATE.format(methodology=methodology_text or "(none)", standardized=standardized_text or "(none)"),
                 max_tokens=1200,
             )
-            data = json.loads(extract_json(raw))
             llm_findings = data.get("findings", []) or []
             summary = data.get("summary", "")
         except Exception:  # noqa: BLE001 - LLM review is advisory

@@ -1,8 +1,10 @@
 """Document generation (cross-cutting, Phase F foundation).
 
-Renders structured artifacts to DOCX. The standardized methodology uses the
-default SCAD file-output rules (A4, 1-inch margins, Arial); the SCAD-specific
-methodology (Phase I) will instead apply the official template.
+Renders structured artifacts to DOCX and XLSX. The standardized methodology
+uses the default SCAD file-output rules (A4, 1-inch margins, Arial); the
+SCAD-specific methodology (Phase I) will instead apply the official template.
+Indicator cards are rendered in SCAD's transposed "Indicator Information Card"
+layout (headings in column 1, one indicator per subsequent column).
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ from docx import Document
 from docx.shared import Inches, Mm, Pt, RGBColor
 
 from app.models.gap_assessment import GapAssessment
+from app.models.indicator import INDICATOR_CARD_FIELDS
 from app.models.scad_methodology import SCADMethodology
 from app.models.standardized_methodology import StandardizedMethodology
 
@@ -196,4 +199,41 @@ def render_gap_assessment_docx(gap: GapAssessment) -> bytes:
 
     buffer = BytesIO()
     doc.save(buffer)
+    return buffer.getvalue()
+
+
+def _indicator_card_row(indicator) -> list[str]:
+    """Return one indicator's field values in SCAD card order (list fields joined)."""
+    if hasattr(indicator, "card_row"):
+        return indicator.card_row()
+    values: list[str] = []
+    for _heading, attr in INDICATOR_CARD_FIELDS:
+        value = indicator.get(attr, "") if isinstance(indicator, dict) else getattr(indicator, attr, "")
+        if isinstance(value, list):
+            value = ", ".join(str(v) for v in value)
+        values.append(str(value))
+    return values
+
+
+def render_indicator_cards_xlsx(indicators: list) -> bytes:
+    """Render indicators in SCAD's transposed Indicator Information Card layout.
+
+    Column 1 holds the field headings (vertical); each subsequent column holds
+    one indicator's values, matching how SCAD prepares its indicator list.
+    """
+    from openpyxl import Workbook
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Indicators"
+
+    for row, (heading, _attr) in enumerate(INDICATOR_CARD_FIELDS, start=1):
+        sheet.cell(row=row, column=1, value=heading)
+
+    for col, indicator in enumerate(indicators, start=2):
+        for row, value in enumerate(_indicator_card_row(indicator), start=1):
+            sheet.cell(row=row, column=col, value=value)
+
+    buffer = BytesIO()
+    workbook.save(buffer)
     return buffer.getvalue()

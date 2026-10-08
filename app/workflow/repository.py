@@ -138,3 +138,9 @@ def list_audit(session: Session, case_id: str) -> list[AuditLogRecord]:
         .order_by(AuditLogRecord.id.asc())
         .all()
     )
+
+
+def reset_case_workflow(session: Session, case_id: str) -> None:
+    """Clear all workflow state (stages, tasks, approvals, audit) for a case."""
+    for model in (WorkflowStageRecord, AgentTaskRecord, ApprovalRecord, AuditLogRecord):
+        session.query(model).filter(model.case_id == case_id).delete()

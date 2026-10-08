@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
 from app.models.gap_assessment import GapAssessment, GapItem
 from app.workflow.contracts import Agent, AgentContract, AgentResult
@@ -45,7 +45,9 @@ Return JSON with this shape:
   "recommendations": ["..."],
   "references": ["..."],
   "reasoning": ["2-4 concise step-by-step thoughts"]
-}}"""
+}}
+
+Limit the matrix to at most 6 rows and keep every field to one short sentence."""
 
 
 class GapAssessmentAgent(Agent):
@@ -68,24 +70,30 @@ class GapAssessmentAgent(Agent):
         standardized = (inputs or {}).get("standardized_methodology") or {}
         scad_methodology = (inputs or {}).get("scad_methodology") or {}
 
+        if not objective:
+            return AgentResult(
+                agent_id=self.contract.id,
+                status="failed",
+                recommendations=[{"error": "missing objective in case context"}],
+            )
+
         standardized_text = "\n".join(
-            f"{s.get('number')}. {s.get('title')}: {s.get('content', '')}"
+            f"{s.get('number')}. {s.get('title')}: {(s.get('content', '') or '')[:120]}"
             for s in standardized.get("methodology", {}).get("sections", [])
         )
         scad_text = "\n".join(
-            f"{s.get('number')}. {s.get('title')}: {s.get('content', '')}"
+            f"{s.get('number')}. {s.get('title')}: {(s.get('content', '') or '')[:120]}"
             for s in scad_methodology.get("methodology", {}).get("sections", [])
         )
 
         user_prompt = USER_TEMPLATE.format(
-            objective=objective or "statistical indicator",
+            objective=objective,
             standardized=standardized_text or "(none)",
             scad=scad_text or "(none)",
         )
 
         try:
-            raw = self._llm.chat(SYSTEM_PROMPT, user_prompt, max_tokens=2500)
-            data = json.loads(extract_json(raw))
+            data = chat_json(self._llm, SYSTEM_PROMPT, user_prompt, max_tokens=1800)
         except Exception as exc:  # noqa: BLE001
             return AgentResult(
                 agent_id=self.contract.id,

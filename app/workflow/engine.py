@@ -60,7 +60,13 @@ class WorkflowEngine:
         return stage.condition is None or bool(context.get(stage.condition, False))
 
     def _dependency_satisfied(self, dependency: str, context: dict[str, bool]) -> bool:
-        if self.stage_states[dependency] == StageStatus.COMPLETED:
+        # A failed or skipped stage must not wedge the workflow: treat it as
+        # satisfied so downstream stages can proceed (with partial context).
+        if self.stage_states[dependency] in (
+            StageStatus.COMPLETED,
+            StageStatus.FAILED,
+            StageStatus.SKIPPED,
+        ):
             return True
         dep_stage = self.workflow.stage(dependency)
         if dep_stage is not None and not self._stage_applicable(dep_stage, context):
@@ -125,8 +131,21 @@ class WorkflowEngine:
             result = self.executor.execute(agent, self._inputs_for_stage(stage, inputs))
         except Exception as exc:  # noqa: BLE001 - surface failure, keep workflow alive
             self.stage_states[stage_id] = StageStatus.FAILED
-            self._emit(workflow_events.AGENT_FAILED, {"stage": stage_id, "error": str(exc)})
+            self._emit(workflow_events.AGENT_FAILED, {"stage": stage_id, "agent": stage.agent, "error": str(exc)})
             return {"stage": stage_id, "status": StageStatus.FAILED, "ran": True, "error": str(exc)}
+
+        # Agents report their own success/failure via ``AgentResult.status``; do
+        # not let a failed agent silently pass as COMPLETED just because its
+        # stage has no required outputs.
+        if getattr(result, "status", "succeeded") != "succeeded":
+            error = "; ".join(
+                str(r.get("error", ""))
+                for r in (result.recommendations or [])
+                if r.get("error")
+            ) or "agent reported failure"
+            self.stage_states[stage_id] = StageStatus.FAILED
+            self._emit(workflow_events.AGENT_FAILED, {"stage": stage_id, "agent": stage.agent, "error": error})
+            return {"stage": stage_id, "status": StageStatus.FAILED, "ran": True, "error": error}
 
         missing = [o for o in stage.required_outputs if o not in result.outputs]
         if missing:
@@ -137,7 +156,12 @@ class WorkflowEngine:
         self.stage_outputs[stage_id] = result
         if stage.approval_required:
             self.stage_states[stage_id] = StageStatus.WAITING_FOR_HUMAN
-            self._emit(workflow_events.APPROVAL_REQUESTED, {"stage": stage_id, "agent": stage.agent})
+            self._emit(workflow_events.APPROVAL_REQUESTED, {
+                "stage": stage_id,
+                "agent": stage.agent,
+                "reasoning": result.outputs.get("reasoning", []),
+                "output_keys": list(result.outputs.keys()),
+            })
         else:
             self.stage_states[stage_id] = StageStatus.COMPLETED
             self._emit(workflow_events.STAGE_COMPLETED, {
@@ -150,6 +174,10 @@ class WorkflowEngine:
         return {"stage": stage_id, "status": self.stage_states[stage_id], "ran": True}
 
     def approve(self, stage_id: str, decision: ApprovalDecision) -> StageStatus:
+        # Idempotent: re-approving an already-completed stage (e.g. double-click
+        # or a client retry racing a prior approve) is a no-op, not an error.
+        if self.stage_states.get(stage_id) == StageStatus.COMPLETED:
+            return StageStatus.COMPLETED
         if self.stage_states.get(stage_id) != StageStatus.WAITING_FOR_HUMAN:
             raise RuntimeError(f"stage {stage_id} is not awaiting approval")
 
@@ -198,7 +226,11 @@ class WorkflowEngine:
 
     def is_stage_done(self, stage_id: str, condition_context: dict[str, bool] | None = None) -> bool:
         context = condition_context or self._last_context
-        if self.stage_states[stage_id] == StageStatus.COMPLETED:
+        if self.stage_states[stage_id] in (
+            StageStatus.COMPLETED,
+            StageStatus.FAILED,
+            StageStatus.SKIPPED,
+        ):
             return True
         stage = self.workflow.stage(stage_id)
         return stage is not None and not self._stage_applicable(stage, context)

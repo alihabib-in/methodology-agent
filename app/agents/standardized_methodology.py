@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 
-from app.agent.extractor import extract_json
+from app.agent.extractor import chat_json
 from app.llm.client import LLMClient
 from app.models.standardized_methodology import (
     STANDARDIZED_SECTIONS,
@@ -17,6 +17,22 @@ from app.models.standardized_methodology import (
     StandardizedSection,
 )
 from app.workflow.contracts import Agent, AgentContract, AgentResult
+
+
+def _data_text(datasets: list[dict]) -> str:
+    """Render retrieved datasets as a compact block for the LLM prompt."""
+    if not datasets:
+        return "- (no real data retrieved)"
+    lines = []
+    for d in datasets:
+        latest = d.get("latest") or []
+        if d.get("portal") == "worldbank":
+            sample = "; ".join(f"{v.get('year', '?')}: {v.get('value')}" for v in latest[:3])
+        else:
+            sample = f"{d.get('data_points', len(latest))} data points"
+        lines.append(f"- [{d['portal']}] {d.get('title')} ({d.get('dataset_id')}): {sample}")
+    return "\n".join(lines)
+
 
 SYSTEM_PROMPT = """You are a statistical methodology development agent.
 
@@ -36,6 +52,10 @@ Relevant international sources:
 
 Key research findings:
 {findings}
+
+Real data retrieved from public portals (cite these figures factually, do not
+invent numbers):
+{data}
 
 Develop the standardized methodology covering these sections:
 {sections}
@@ -74,6 +94,13 @@ class StandardizedMethodologyAgent(Agent):
         domain = (inputs or {}).get("domain") or ""
         research = (inputs or {}).get("international_research") or {}
 
+        if not objective:
+            return AgentResult(
+                agent_id=self.contract.id,
+                status="failed",
+                recommendations=[{"error": "missing objective in case context"}],
+            )
+
         source_names = [
             s.get("name") for s in research.get("source_register", []) if s.get("name")
         ]
@@ -81,18 +108,21 @@ class StandardizedMethodologyAgent(Agent):
         findings_text = "\n".join(
             f"- {f.get('concept', '')}: {f.get('guidance', '')}" for f in findings
         )
+        data_acq = (inputs or {}).get("data_acquisition") or {}
+        datasets = data_acq.get("datasets") or data_acq.get("evidence_package", {}).get("datasets") or []
+        data_text = _data_text(datasets)
 
         user_prompt = USER_TEMPLATE.format(
-            objective=objective or "statistical indicator",
+            objective=objective,
             domain=domain or "not specified",
             sources="\n".join(f"- {n}" for n in source_names) or "- (none)",
             findings=findings_text or "- (none)",
+            data=data_text,
             sections="\n".join(f"{n}. {t}" for n, t in STANDARDIZED_SECTIONS),
         )
 
         try:
-            raw = self._llm.chat(SYSTEM_PROMPT, user_prompt, max_tokens=2500)
-            data = json.loads(extract_json(raw))
+            data = chat_json(self._llm, SYSTEM_PROMPT, user_prompt, max_tokens=2500)
         except Exception as exc:  # noqa: BLE001
             return AgentResult(
                 agent_id=self.contract.id,

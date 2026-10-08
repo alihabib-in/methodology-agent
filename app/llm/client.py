@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+import time
 from typing import Any
 
 import httpx
 
 from app.core.config import settings
+
+_RETRIES = 3
+_RETRY_BACKOFF_SECONDS = 15.0
 
 
 class LLMError(RuntimeError):
@@ -44,21 +50,33 @@ class LLMClient:
             "max_tokens": max_tokens or settings.llm_max_tokens,
         }
 
-        try:
-            with httpx.Client(timeout=self.timeout) as client:
-                response = client.post(
-                    f"{self.base_url}/chat/completions",
-                    json=payload,
-                )
-                response.raise_for_status()
-                data = response.json()
-        except httpx.HTTPError as exc:
-            raise LLMError(f"LLM request failed: {exc}") from exc
+        last_error: Exception | None = None
+        for attempt in range(_RETRIES):
+            try:
+                with httpx.Client(timeout=self.timeout) as client:
+                    response = client.post(
+                        f"{self.base_url}/chat/completions",
+                        json=payload,
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                return data["choices"][0]["message"]["content"]
+            except (httpx.NetworkError, httpx.ProtocolError) as exc:
+                # The local llama.cpp server can crash/restart under load.
+                # These fail fast, so retry after giving it time to reload.
+                last_error = exc
+                time.sleep(_RETRY_BACKOFF_SECONDS)
+            except (KeyError, IndexError, TypeError) as exc:
+                # A transient/malformed body (e.g. mid-restart) — retry.
+                last_error = exc
+                time.sleep(_RETRY_BACKOFF_SECONDS)
+            except httpx.TimeoutException as exc:
+                # Genuinely slow; don't multiply the wait with retries.
+                raise LLMError(f"LLM request timed out: {exc}") from exc
+            except httpx.HTTPError as exc:
+                raise LLMError(f"LLM request failed: {exc}") from exc
 
-        try:
-            return data["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise LLMError("Unexpected LLM response shape") from exc
+        raise LLMError(f"LLM request failed after {_RETRIES} attempts: {last_error}")
 
     def health(self) -> dict[str, Any]:
         try:

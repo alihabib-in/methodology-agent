@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.agent.methodology_agent import MethodologyAgent
+from app.agents.case_analysis import CaseAnalysisAgent
+from app.agents.data_acquisition import DataAcquisitionAgent
 from app.agents.document_analysis import DocumentAnalysisAgent
 from app.agents.elicitation import ElicitationAgent
 from app.agents.compliance import ComplianceAgent
@@ -69,6 +71,8 @@ app.state.realtime_broker = realtime_broker
 agent_registry = AgentRegistry()
 agent_registry.register(ElicitationAgent(agent))
 agent_registry.register(DocumentAnalysisAgent(agent))
+agent_registry.register(CaseAnalysisAgent(agent.llm))
+agent_registry.register(DataAcquisitionAgent(agent.llm))
 agent_registry.register(InternationalResearchAgent(agent.llm))
 agent_registry.register(StandardizedMethodologyAgent(agent.llm))
 agent_registry.register(SCADInputAgent(agent.llm))
